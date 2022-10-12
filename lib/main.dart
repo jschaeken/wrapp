@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'HomePage.dart';
+import 'Screens/ProfileView.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,15 +17,18 @@ class MyApp extends StatelessWidget {
         colorScheme: _customColorScheme,
       ),
       home: const MyHomePage(title: 'Welcome to the WR App'),
+      routes: {
+        '/profile': (context) => ProfileView('const Test User'),
+      },
     );
   }
 }
 
 const ColorScheme _customColorScheme = ColorScheme(
   primary: Colors.black,
-  secondary: Colors.lightBlue,
+  secondary: Colors.grey,
   surface: Colors.purpleAccent,
-  background: Colors.amber,
+  background: Colors.blueGrey,
   error: Colors.black,
   onPrimary: Colors.white,
   onSecondary: Colors.white,
