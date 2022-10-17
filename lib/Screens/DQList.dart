@@ -12,51 +12,110 @@ class DQList extends StatefulWidget {
 
 class _DQListState extends State<DQList> {
   List<bool> isFavorited = [];
-  List<String> dqList = [
-    'This gun smells like my grannys fanny - Harry',
-    "Yeah surely you don't get penalised for pulling a Kiddo - Daniel",
-    'I concur my balls in your ass - Eoin',
-    'Anne Franks Hot Sauce - Daniel',
-    'We did the head thing - Jacques',
-    'idk yet',
-    'idk yet',
-    'idk yet',
-    'idk yet',
-    'idk yet',
-    'idk yet',
-    'idk yet',
-    'idk yet',
-    'idk yet',
-    'idk yet',
+  List<NameAndText> dqList = [
+    // 'This gun smells like my grannys fanny - Harry',
+    // "Yeah surely you don't get penalised for pulling a Kiddo - Daniel",
+    // 'I concur my balls in your ass - Eoin',
+    // 'Anne Franks Hot Sauce - Daniel',
+    // 'We did the head thing - Jacques',
   ];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    isFavorited = [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-    ];
+    refreshDqs();
   }
+
+  void refreshDqs() {
+    for (NameAndText s in dqList) {
+      isFavorited.add(false);
+    }
+  }
+
+  var names = [
+    'Select Name',
+    'Jacques',
+    'James',
+    'Shane',
+    'Harry',
+    'Carl',
+    'Calem',
+    'Sean',
+    'Daniel',
+    'Rory',
+    'Eoin',
+  ];
+
+  String dropdownvalue = 'Select Name';
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController textControl = TextEditingController();
     return SafeArea(
         child: Scaffold(
-      appBar: AppBar(automaticallyImplyLeading: true),
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        title: Text('DQs'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      scrollable: true,
+                      title: Text('Add DQ'),
+                      content: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Form(
+                          child: Column(
+                            children: <Widget>[
+                              TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: 'Dq',
+                                ),
+                                controller: textControl,
+                              ),
+                              DropdownButton(
+                                value: dropdownvalue,
+                                // icon: const Icon(Icons.keyboard_arrow_down),
+                                items: names.map((String names) {
+                                  return DropdownMenuItem(
+                                    value: names,
+                                    child: Text(names),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    dropdownvalue = newValue!;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      actions: [
+                        ElevatedButton(
+                            child: const Text("Add"),
+                            onPressed: () {
+                              setState(() {
+                                dqList.insert(
+                                    0,
+                                    NameAndText(
+                                        textControl.text, dropdownvalue));
+                                refreshDqs();
+                                Navigator.pop(context);
+                              });
+                            })
+                      ],
+                    );
+                  });
+            },
+            icon: Icon(Icons.add_circle_outline_sharp),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: ListView.separated(
           physics: const ScrollPhysics(),
@@ -73,7 +132,7 @@ class _DQListState extends State<DQList> {
                   Flexible(
                     flex: 1,
                     child: Text(
-                      dqList[index],
+                      '${dqList[index].text.toString()} - ${dqList[index].name.toString()}',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -107,4 +166,11 @@ class _DQListState extends State<DQList> {
       },
     );
   }
+}
+
+class NameAndText {
+  String name;
+  String text;
+
+  NameAndText(this.text, this.name);
 }
