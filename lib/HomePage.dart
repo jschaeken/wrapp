@@ -72,88 +72,86 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            ListView.separated(
+              itemCount: topics.length,
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index) {
+                return MaterialButton(
+                  height: 50,
+                  onPressed: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => screens[index]),
+                    )
+                  },
+                  color: colorSwitches[index % colorSwitches.length],
+                  child: Center(
+                      child: Text(
+                    topics[index],
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary),
+                  )),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return SizedBox(
+                  height: 10,
+                );
+              },
+            ),
+          ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              ListView.separated(
-                itemCount: topics.length,
-                shrinkWrap: true,
-                itemBuilder: (BuildContext context, int index) {
-                  return MaterialButton(
-                    height: 50,
-                    onPressed: () => {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => screens[index]),
-                      )
-                    },
-                    color: colorSwitches[index % colorSwitches.length],
-                    child: Center(
-                        child: Text(
-                      topics[index],
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary),
-                    )),
-                  );
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return SizedBox(
-                    height: 10,
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-        drawer: Drawer(
-          child: Column(
-            children: [
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    'Profiles',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Profiles',
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: (SingleChildScrollView(
-                  child: ListView.separated(
-                    itemCount: baseNames.length,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      return MaterialButton(
-                        onPressed: () => {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    ProfileView(baseNames[index])),
-                          ),
-                        },
-                        height: 50,
-                        color: Theme.of(context).colorScheme.background,
-                        child: Center(child: Text(baseNames[index])),
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const SizedBox(
-                        height: 10,
-                      );
-                    },
-                  ),
-                )),
-              ),
-            ],
-          ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: (SingleChildScrollView(
+                child: ListView.separated(
+                  itemCount: baseNames.length,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    return MaterialButton(
+                      onPressed: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ProfileView(baseNames[index])),
+                        ),
+                      },
+                      height: 50,
+                      color: Theme.of(context).colorScheme.background,
+                      child: Center(child: Text(baseNames[index])),
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return const SizedBox(
+                      height: 10,
+                    );
+                  },
+                ),
+              )),
+            ),
+          ],
         ),
       ),
     );

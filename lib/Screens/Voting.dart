@@ -13,8 +13,7 @@ class Voting extends StatefulWidget {
 class _VotingState extends State<Voting> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
       ),
@@ -25,6 +24,6 @@ class _VotingState extends State<Voting> {
           ),
         ],
       ),
-    ));
+    );
   }
 }

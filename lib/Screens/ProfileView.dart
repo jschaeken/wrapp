@@ -15,8 +15,7 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
       ),
@@ -52,6 +51,6 @@ class _ProfileViewState extends State<ProfileView> {
           ),
         ],
       ),
-    ));
+    );
   }
 }

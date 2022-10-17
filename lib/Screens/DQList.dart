@@ -51,8 +51,7 @@ class _DQListState extends State<DQList> {
   @override
   Widget build(BuildContext context) {
     TextEditingController textControl = TextEditingController();
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
         title: Text('DQs'),
@@ -154,7 +153,7 @@ class _DQListState extends State<DQList> {
           },
         ),
       ),
-    ));
+    );
   }
 
   void dQFav(int index) {

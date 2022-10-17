@@ -13,11 +13,9 @@ class BetView extends StatefulWidget {
 class _BetViewState extends State<BetView> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(automaticallyImplyLeading: true),
-        body: Column(children: [Center(child: Text('Betting Data'))]),
-      ),
+    return Scaffold(
+      appBar: AppBar(automaticallyImplyLeading: true),
+      body: Column(children: [Center(child: Text('Betting Data'))]),
     );
   }
 }
