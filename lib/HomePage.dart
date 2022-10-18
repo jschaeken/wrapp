@@ -148,17 +148,6 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
               child: Text('Add names'),
             ),
-            MaterialButton(
-              onPressed: (() {
-                setState(() {
-                  for (int i = 0; i < baseNames.length; i++) {
-                    setDqs(NameAndText(
-                        text: 'Some loose dq here', name: 'Jacques'));
-                  }
-                });
-              }),
-              child: Text('Add dq'),
-            ),
           ],
         ),
       ),
@@ -207,18 +196,18 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            label: 'Home',
-            icon: Icon(Icons.home),
-          ),
-          BottomNavigationBarItem(
-            label: 'Favorites',
-            icon: Icon(Icons.favorite),
-          ),
-        ],
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   items: const [
+      //     BottomNavigationBarItem(
+      //       label: 'Home',
+      //       icon: Icon(Icons.home),
+      //     ),
+      //     BottomNavigationBarItem(
+      //       label: 'Favorites',
+      //       icon: Icon(Icons.favorite),
+      //     ),
+      //   ],
+      // ),
     );
   }
 }

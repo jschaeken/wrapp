@@ -92,54 +92,60 @@ class _DQListState extends State<DQList> {
               showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return AlertDialog(
-                      scrollable: true,
-                      title: Text('Add DQ'),
-                      content: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Form(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'DQ',
-                                ),
-                                controller: textControl,
+                    return StatefulBuilder(
+                      builder: ((context, setState) {
+                        return AlertDialog(
+                          scrollable: true,
+                          title: Text('Add DQ'),
+                          content: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Form(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  TextFormField(
+                                    autofocus: true,
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                      labelText: 'DQ',
+                                    ),
+                                    controller: textControl,
+                                  ),
+                                  DropdownButton(
+                                    value: dropdownvalue,
+                                    // icon: const Icon(Icons.keyboard_arrow_down),
+                                    items: names.map((String names) {
+                                      return DropdownMenuItem(
+                                        value: names,
+                                        child: Text(names),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        dropdownvalue = newValue!;
+                                      });
+                                    },
+                                  ),
+                                ],
                               ),
-                              DropdownButton(
-                                value: dropdownvalue,
-                                // icon: const Icon(Icons.keyboard_arrow_down),
-                                items: names.map((String names) {
-                                  return DropdownMenuItem(
-                                    value: names,
-                                    child: Text(names),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    dropdownvalue = newValue!;
-                                  });
-                                },
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                      actions: [
-                        ElevatedButton(
-                            child: const Text("Add"),
-                            onPressed: () {
-                              setState(() {
-                                setDqs(NameAndText(
-                                    text: textControl.text,
-                                    name: dropdownvalue));
-                                // getDqs();
-                                // print(nameAndTextList.length);
-                                Navigator.pop(context);
-                              });
-                            })
-                      ],
+                          actions: [
+                            ElevatedButton(
+                                child: const Text("Add"),
+                                onPressed: () {
+                                  setState(() {
+                                    setDqs(NameAndText(
+                                        text: textControl.text,
+                                        name: dropdownvalue));
+                                    // getDqs();
+                                    // print(nameAndTextList.length);
+                                    Navigator.pop(context);
+                                  });
+                                })
+                          ],
+                        );
+                      }),
                     );
                   });
             },
