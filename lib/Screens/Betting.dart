@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:wrapp/Screens/BetView.dart';
 
 class Betting extends StatefulWidget {
@@ -49,7 +47,7 @@ class _BettingState extends State<Betting> {
                     height: 10,
                   );
                 },
-                itemCount: betsList.length)
+                itemCount: betsList.length),
           ],
         ),
       ),

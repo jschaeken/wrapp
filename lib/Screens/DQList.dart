@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:wrapp/Utilities/Storage.dart';
 
 class DQList extends StatefulWidget {
   const DQList({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class _DQListState extends State<DQList> {
     // 'Anne Franks Hot Sauce - Daniel',
     // 'We did the head thing - Jacques',
   ];
+  List<String> retrievedDqList = ['Not Loaded'];
   @override
   void initState() {
     // TODO: implement initState
@@ -26,8 +28,10 @@ class _DQListState extends State<DQList> {
     refreshDqs();
   }
 
-  void refreshDqs() {
-    for (NameAndText s in dqList) {
+  void refreshDqs() async {
+    retrievedDqList = await getFromLocal();
+    isFavorited.add(false);
+    for (String s in retrievedDqList) {
       isFavorited.add(false);
     }
   }
@@ -51,6 +55,7 @@ class _DQListState extends State<DQList> {
   @override
   Widget build(BuildContext context) {
     TextEditingController textControl = TextEditingController();
+    refreshDqs();
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -103,6 +108,8 @@ class _DQListState extends State<DQList> {
                                     0,
                                     NameAndText(
                                         textControl.text, dropdownvalue));
+                                commitToLocal(
+                                    '${dqList[0].text.toString()} - ${dqList[0].name.toString()}');
                                 refreshDqs();
                                 Navigator.pop(context);
                               });
@@ -119,7 +126,7 @@ class _DQListState extends State<DQList> {
         child: ListView.separated(
           physics: const ScrollPhysics(),
           shrinkWrap: true,
-          itemCount: dqList.length,
+          itemCount: retrievedDqList.length,
           itemBuilder: (_, index) {
             // String value = listValues[index];
             return Padding(
@@ -131,7 +138,7 @@ class _DQListState extends State<DQList> {
                   Flexible(
                     flex: 1,
                     child: Text(
-                      '${dqList[index].text.toString()} - ${dqList[index].name.toString()}',
+                      retrievedDqList[index],
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -164,6 +171,16 @@ class _DQListState extends State<DQList> {
         isFavorited.insert(index, !temp);
       },
     );
+  }
+
+  Storage storageController = Storage();
+  var key = 'dqList';
+  void commitToLocal(String newEntry) {
+    storageController.storeData(key, newEntry);
+  }
+
+  Future<List<String>> getFromLocal() async {
+    return storageController.retrieveData(key);
   }
 }
 

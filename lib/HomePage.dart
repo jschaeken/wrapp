@@ -61,14 +61,14 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> topics = [
     'Betting',
     'Voting',
-    'DQs',
+    //'DQs',
   ];
 
   List<Widget> pages = [];
   List screens = [
     Betting(),
     Voting(),
-    DQList(),
+    //DQList(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -81,8 +81,9 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             ListView.separated(
-              itemCount: topics.length,
+              itemCount: screens.length,
               shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (BuildContext context, int index) {
                 return MaterialButton(
                   height: 50,
@@ -153,6 +154,18 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            label: 'Home',
+            icon: Icon(Icons.home),
+          ),
+          BottomNavigationBarItem(
+            label: 'Favorites',
+            icon: Icon(Icons.favorite),
+          ),
+        ],
       ),
     );
   }
