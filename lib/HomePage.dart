@@ -1,9 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:wrapp/Screens/Betting.dart';
 import 'package:wrapp/Screens/DQList.dart';
 import 'package:wrapp/Screens/ProfileView.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 import 'Screens/Voting.dart';
+import 'firebase_options.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -61,15 +64,39 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> topics = [
     'Betting',
     'Voting',
-    //'DQs',
+    'DQs',
   ];
 
   List<Widget> pages = [];
+  int counter = 0;
   List screens = [
     Betting(),
     Voting(),
-    //DQList(),
+    DQList(),
   ];
+  late DatabaseReference usersDatabase;
+  late DatabaseReference dqDatabase;
+  @override
+  void initState() {
+    super.initState();
+    initDatabase();
+  }
+
+  void initDatabase() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    usersDatabase = FirebaseDatabase.instance.ref("users");
+  }
+
+  void setNames(int i) async {
+    usersDatabase.update({'Name ${i.toString()}': baseNames[i]});
+  }
+
+  void setDqs(NameAndText nameAndText) async {
+    dqDatabase.update({'string': nameAndText.text, 'name': nameAndText.name});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,15 +135,40 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
             ),
+            Spacer(
+              flex: 1,
+            ),
+            MaterialButton(
+              onPressed: (() {
+                setState(() {
+                  for (int i = 0; i < baseNames.length; i++) {
+                    setNames(i);
+                  }
+                });
+              }),
+              child: Text('Add names'),
+            ),
+            MaterialButton(
+              onPressed: (() {
+                setState(() {
+                  for (int i = 0; i < baseNames.length; i++) {
+                    setDqs(NameAndText(
+                        text: 'Some loose dq here', name: 'Jacques'));
+                  }
+                });
+              }),
+              child: Text('Add dq'),
+            ),
           ],
         ),
       ),
       drawer: Drawer(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             const Center(
               child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(20.0),
                 child: Text(
                   'Profiles',
                   style: TextStyle(fontWeight: FontWeight.bold),

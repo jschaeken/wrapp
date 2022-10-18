@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "849897017725",
+    "firebase_url": "https://wr-app-130039404-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "wr-app-130039404",
+    "storage_bucket": "wr-app-130039404.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849897017725:android:d933e8b62d7e5e27157c14",
+        "android_client_info": {
+          "package_name": "com.example.wrapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "849897017725-q9fkklq89dsmhg11jhvjcbv82k14fbr5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrvSPbPCA0GVfcYyABuf5mpVjOQXMucR0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "849897017725-q9fkklq89dsmhg11jhvjcbv82k14fbr5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "849897017725-b9i3b808opp4vnk0ftlngjtqo335dvgq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.wrapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

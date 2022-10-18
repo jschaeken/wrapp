@@ -1,9 +1,19 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'HomePage.dart';
 import 'Screens/ProfileView.dart';
+import 'firebase_options.dart';
 
-void main() {
+Future<void> main() async {
+  initFirebase();
   runApp(const MyApp());
+}
+
+void initFirebase() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
 }
 
 class MyApp extends StatelessWidget {

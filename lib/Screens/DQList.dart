@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:wrapp/Utilities/Storage.dart';
 
 class DQList extends StatefulWidget {
@@ -21,17 +21,19 @@ class _DQListState extends State<DQList> {
     // 'We did the head thing - Jacques',
   ];
   List<String> retrievedDqList = ['Not Loaded'];
+  late DatabaseReference dqDatabase;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    refreshDqs();
+    refreshDqsFavs();
+    dqDatabase = FirebaseDatabase.instance.ref("dqs");
   }
 
-  void refreshDqs() async {
-    retrievedDqList = await getFromLocal();
+  void refreshDqsFavs() async {
     isFavorited.add(false);
-    for (String s in retrievedDqList) {
+    for (int i = 0; i < 10; i++) {
       isFavorited.add(false);
     }
   }
@@ -52,10 +54,34 @@ class _DQListState extends State<DQList> {
 
   String dropdownvalue = 'Select Name';
 
+  void setDqs(NameAndText nameAndText) async {
+    final newPostKey = dqDatabase.push().key;
+    final Map<String, Map> updates = {};
+    final postData = {'text': nameAndText.text, 'name': nameAndText.name};
+    updates['/$newPostKey'] = postData;
+    dqDatabase.update(updates);
+  }
+
+  // Future<List<NameAndText>> getDqs() async {
+  //   dqDatabase.onValue.listen((snap) {
+  //     final data = Map<String?, dynamic>.from(
+  //         snap.snapshot.value as Map<dynamic, dynamic>);
+  //     data.forEach((key, value) {
+  //       var detail = Map<dynamic, dynamic>.from(value);
+  //       nameAndTextList.add(NameAndText(detail['text'], detail['name']));
+  //     });
+  //   });
+  //   setState(() {
+  //     nameAndTextList;
+  //   });
+  //   print(nameAndTextList);
+  //   return nameAndTextList;
+  // }
+
   @override
   Widget build(BuildContext context) {
     TextEditingController textControl = TextEditingController();
-    refreshDqs();
+    // List<NameAndText> nameAndTextList = [];
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -73,10 +99,11 @@ class _DQListState extends State<DQList> {
                         padding: const EdgeInsets.all(8.0),
                         child: Form(
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               TextFormField(
                                 decoration: InputDecoration(
-                                  labelText: 'Dq',
+                                  labelText: 'DQ',
                                 ),
                                 controller: textControl,
                               ),
@@ -104,13 +131,11 @@ class _DQListState extends State<DQList> {
                             child: const Text("Add"),
                             onPressed: () {
                               setState(() {
-                                dqList.insert(
-                                    0,
-                                    NameAndText(
-                                        textControl.text, dropdownvalue));
-                                commitToLocal(
-                                    '${dqList[0].text.toString()} - ${dqList[0].name.toString()}');
-                                refreshDqs();
+                                setDqs(NameAndText(
+                                    text: textControl.text,
+                                    name: dropdownvalue));
+                                // getDqs();
+                                // print(nameAndTextList.length);
                                 Navigator.pop(context);
                               });
                             })
@@ -118,47 +143,68 @@ class _DQListState extends State<DQList> {
                     );
                   });
             },
-            icon: Icon(Icons.add_circle_outline_sharp),
+            icon: Icon(Icons.add),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: ListView.separated(
-          physics: const ScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: retrievedDqList.length,
-          itemBuilder: (_, index) {
-            // String value = listValues[index];
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    flex: 1,
-                    child: Text(
-                      retrievedDqList[index],
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+      body: StreamBuilder(
+        stream: dqDatabase.orderByKey().limitToFirst(10).onValue,
+        builder: (context, snapshot) {
+          List<NameAndText> nameAndTextList = [];
+          if (snapshot.hasData) {
+            if ((snapshot.data as DatabaseEvent).snapshot.value != null) {
+              final data = Map<dynamic, dynamic>.from(
+                  (snapshot.data as DatabaseEvent).snapshot.value
+                      as Map<dynamic, dynamic>);
+              data.forEach((key, value) {
+                var detail = Map<dynamic, dynamic>.from(value);
+                nameAndTextList.add(
+                    NameAndText(text: detail['text'], name: detail['name']));
+              });
+            }
+          }
+          return (snapshot.connectionState != ConnectionState.active)
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : SingleChildScrollView(
+                  child: ListView.separated(
+                    physics: const ScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: nameAndTextList.length,
+                    itemBuilder: (_, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              flex: 1,
+                              child: Text(
+                                '${nameAndTextList[index].text} - ${nameAndTextList[index].name}',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            IconButton(
+                                icon: Icon(
+                                    isFavorited[index]
+                                        ? Icons.favorite
+                                        : Icons.favorite_border_rounded,
+                                    color: Colors.red),
+                                onPressed: () => {dQFav(index)}),
+                          ],
+                        ),
+                      );
+                    },
+                    separatorBuilder: (_, index) {
+                      return const SizedBox(
+                        height: 10,
+                      );
+                    },
                   ),
-                  IconButton(
-                      icon: Icon(
-                          isFavorited[index]
-                              ? Icons.favorite
-                              : Icons.favorite_border_rounded,
-                          color: Colors.red),
-                      onPressed: () => {dQFav(index)}),
-                ],
-              ),
-            );
-          },
-          separatorBuilder: (_, index) {
-            return const SizedBox(
-              height: 10,
-            );
-          },
-        ),
+                );
+        },
       ),
     );
   }
@@ -173,20 +219,20 @@ class _DQListState extends State<DQList> {
     );
   }
 
-  Storage storageController = Storage();
-  var key = 'dqList';
-  void commitToLocal(String newEntry) {
-    storageController.storeData(key, newEntry);
-  }
+  // Storage storageController = Storage();
+  // var key = 'dqList';
+  // void commitToLocal(String newEntry) {
+  //   storageController.storeData(key, newEntry);
+  // }
 
-  Future<List<String>> getFromLocal() async {
-    return storageController.retrieveData(key);
-  }
+  // Future<List<String>> getFromLocal() async {
+  //   return storageController.retrieveData(key);
+  // }
 }
 
 class NameAndText {
   String name;
   String text;
 
-  NameAndText(this.text, this.name);
+  NameAndText({required this.text, required this.name});
 }
