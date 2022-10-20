@@ -62,22 +62,6 @@ class _DQListState extends State<DQList> {
     dqDatabase.update(updates);
   }
 
-  // Future<List<NameAndText>> getDqs() async {
-  //   dqDatabase.onValue.listen((snap) {
-  //     final data = Map<String?, dynamic>.from(
-  //         snap.snapshot.value as Map<dynamic, dynamic>);
-  //     data.forEach((key, value) {
-  //       var detail = Map<dynamic, dynamic>.from(value);
-  //       nameAndTextList.add(NameAndText(detail['text'], detail['name']));
-  //     });
-  //   });
-  //   setState(() {
-  //     nameAndTextList;
-  //   });
-  //   print(nameAndTextList);
-  //   return nameAndTextList;
-  // }
-
   @override
   Widget build(BuildContext context) {
     TextEditingController textControl = TextEditingController();

@@ -42,18 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ),
   ];
 
-  List<String> baseNames = [
-    'Jacques',
-    'James',
-    'Shane',
-    'Harry',
-    'Carl',
-    'Calem',
-    'Sean',
-    'Daniel',
-    'Rory',
-    'Eoin',
-  ];
+  List<String> baseNames = [];
 
   List<Color> colorSwitches = [
     Colors.blue,
@@ -75,65 +64,181 @@ class _MyHomePageState extends State<MyHomePage> {
     DQList(),
   ];
   late DatabaseReference usersDatabase;
-  late DatabaseReference dqDatabase;
+  late DatabaseReference notiDatabase;
+  late Stream<DatabaseEvent> usersStream;
   @override
   void initState() {
     super.initState();
-    initDatabase();
+    notiDatabase = FirebaseDatabase.instance.ref("notis");
+    usersDatabase = FirebaseDatabase.instance.ref("users");
+    usersStream = usersDatabase.orderByKey().limitToFirst(10).onValue;
   }
 
-  void initDatabase() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    usersDatabase = FirebaseDatabase.instance.ref("users");
-  }
+  // Stream<DatabaseEvent> getNewStream() {
+  //   return usersDatabase!
+  //       .orderByKey()
+  //       .limitToFirst(10)
+  //       .onValue
+  //       .asBroadcastStream(
+  //     onCancel: (controller) {
+  //       print('Stream cancelled');
+  //       controller.cancel();
+  //     },
+  //   );
+  // }
 
   void setNames(int i) async {
     usersDatabase.update({'Name ${i.toString()}': baseNames[i]});
   }
 
-  void setDqs(NameAndText nameAndText) async {
-    dqDatabase.update({'string': nameAndText.text, 'name': nameAndText.name});
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController textControl = TextEditingController();
+    String lastNoti = '';
+    String lastNotiName = '';
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            onPressed: () => {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return StatefulBuilder(
+                      builder: ((context, setState) {
+                        return AlertDialog(
+                          scrollable: true,
+                          title: Text('WR Alert'),
+                          content: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Form(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  TextFormField(
+                                    autofocus: true,
+                                    keyboardType: TextInputType.name,
+                                    decoration: InputDecoration(
+                                      labelText: 'Alert',
+                                    ),
+                                    controller: textControl,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          actions: [
+                            ElevatedButton(
+                                child: const Text("Send Alert Message"),
+                                onPressed: () {
+                                  setState(() {
+                                    final newPostKey = notiDatabase.push().key;
+                                    final Map<String, Map> updates = {};
+                                    final postData = {
+                                      'text': textControl.text,
+                                      'name': 'Jacques'
+                                    };
+                                    updates['/$newPostKey'] = postData;
+                                    notiDatabase.update(updates);
+                                    Navigator.pop(context);
+                                  });
+                                })
+                          ],
+                        );
+                      }),
+                    );
+                  })
+            },
+            icon: Icon(Icons.notification_add),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            ListView.separated(
-              itemCount: screens.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (BuildContext context, int index) {
-                return MaterialButton(
-                  height: 50,
-                  onPressed: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => screens[index]),
-                    )
-                  },
-                  color: colorSwitches[index % colorSwitches.length],
-                  child: Center(
-                      child: Text(
-                    topics[index],
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary),
-                  )),
+            StreamBuilder(
+              stream: notiDatabase.orderByKey().limitToLast(1).onValue,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  if ((snapshot.data as DatabaseEvent).snapshot.value != null) {
+                    final data = Map<dynamic, dynamic>.from(
+                        (snapshot.data as DatabaseEvent).snapshot.value
+                            as Map<dynamic, dynamic>);
+                    data.forEach((key, value) {
+                      var detail = Map<dynamic, dynamic>.from(value);
+                      lastNoti = detail['text'];
+                      lastNotiName = detail['name'];
+                    });
+                  }
+                }
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(width: 3),
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Text('Latest Announcement from $lastNotiName'),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                lastNoti,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 40,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 );
               },
-              separatorBuilder: (BuildContext context, int index) {
-                return SizedBox(
-                  height: 10,
-                );
-              },
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListView.separated(
+                itemCount: screens.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (BuildContext context, int index) {
+                  return MaterialButton(
+                    height: 50,
+                    onPressed: () => {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => screens[index]),
+                      )
+                    },
+                    color: colorSwitches[index % colorSwitches.length],
+                    child: Center(
+                        child: Text(
+                      topics[index],
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary),
+                    )),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return SizedBox(
+                    height: 10,
+                  );
+                },
+              ),
             ),
             Spacer(
               flex: 1,
@@ -166,32 +271,53 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: (SingleChildScrollView(
-                child: ListView.separated(
-                  itemCount: baseNames.length,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    return MaterialButton(
-                      onPressed: () => {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  ProfileView(baseNames[index])),
-                        ),
-                      },
-                      height: 50,
-                      color: Theme.of(context).colorScheme.background,
-                      child: Center(child: Text(baseNames[index])),
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return const SizedBox(
-                      height: 10,
-                    );
-                  },
-                ),
-              )),
+              child: FutureBuilder(
+                  future: usersDatabase.orderByKey().limitToFirst(10).get(),
+                  builder: (context, event) {
+                    baseNames.clear();
+                    Map<dynamic, dynamic>? dataMap;
+                    if (event.hasData) {
+                      dataMap = (event.data as DataSnapshot).value
+                          as Map<dynamic, dynamic>;
+                      dataMap.forEach((key, value) {
+                        print(value);
+                        baseNames.add(value);
+                      });
+                    }
+                    return (event.connectionState != ConnectionState.done)
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : (SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: ListView.separated(
+                              itemCount: baseNames.length,
+                              shrinkWrap: true,
+                              itemBuilder: (BuildContext context, int index) {
+                                return MaterialButton(
+                                  onPressed: () => {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ProfileView(baseNames[index])),
+                                    ),
+                                  },
+                                  height: 50,
+                                  color:
+                                      Theme.of(context).colorScheme.background,
+                                  child: Center(child: Text(baseNames[index])),
+                                );
+                              },
+                              separatorBuilder:
+                                  (BuildContext context, int index) {
+                                return const SizedBox(
+                                  height: 10,
+                                );
+                              },
+                            ),
+                          ));
+                  }),
             ),
           ],
         ),

@@ -4,17 +4,13 @@ import 'HomePage.dart';
 import 'Screens/ProfileView.dart';
 import 'firebase_options.dart';
 
-Future<void> main() async {
-  initFirebase();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
-void initFirebase() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
-}
+void initFirebase() async {}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
