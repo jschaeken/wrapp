@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wrapp/Utilities/Storage.dart';
 
@@ -153,38 +154,68 @@ class _DQListState extends State<DQList> {
               });
             }
           }
-          return SingleChildScrollView(
-            child: ListView.separated(
-              physics: const AlwaysScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: nameAndTextList.length,
-              itemBuilder: (_, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    title: Text(
-                      '${nameAndTextList[index].text} - ${nameAndTextList[index].name}',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text('Input by X'),
-                    trailing: IconButton(
-                        icon: Icon(
-                            isFavorited[index]
-                                ? Icons.favorite
-                                : Icons.favorite_border_rounded,
-                            color: Colors.red),
-                        onPressed: () => {dQFav(index)}),
+          return ListView.separated(
+            physics: const AlwaysScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: nameAndTextList.length,
+            itemBuilder: (_, index) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  onLongPress: () => showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          content: ElevatedButton(
+                              child: Text(
+                                'Delete',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              onPressed: () {
+                                deleteDq(index);
+                                Navigator.pop(context);
+                              }),
+                        );
+                      }),
+                  title: Text(
+                    '${nameAndTextList[index].text} - ${nameAndTextList[index].name}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                );
-              },
-              separatorBuilder: (context, index) {
-                return const Divider();
-              },
-            ),
+                  subtitle: Text('Input by X'),
+                  trailing: IconButton(
+                      icon: Icon(
+                          isFavorited[index]
+                              ? Icons.favorite
+                              : Icons.favorite_border_rounded,
+                          color: Colors.red),
+                      onPressed: () => {dQFav(index)}),
+                ),
+              );
+            },
+            separatorBuilder: (context, index) {
+              return const Divider();
+            },
           );
         },
       ),
     );
+  }
+
+  void deleteDq(int i) async {
+    final data = await dqDatabase.get();
+    print(data.value);
+    final map = Map<dynamic, dynamic>.from(data.value as Map<dynamic, dynamic>);
+    String? parentKey;
+    int count = 0;
+    map.forEach((key, value) {
+      if (count == i) {
+        parentKey = key.toString();
+      }
+      count++;
+    });
+    if (parentKey != null) {
+      dqDatabase.child('/$parentKey').remove();
+    }
   }
 
   void dQFav(int index) {

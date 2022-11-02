@@ -17,12 +17,32 @@ class _VotingState extends State<Voting> {
       appBar: AppBar(
         automaticallyImplyLeading: true,
       ),
-      body: Column(
-        children: [
-          Center(
-            child: Text('Voting Screen'),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Text('This or That'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.favorite,
+                        size: 50,
+                      )),
+                  IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.heart_broken,
+                        size: 50,
+                      )),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

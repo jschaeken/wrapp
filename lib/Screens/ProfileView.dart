@@ -22,16 +22,29 @@ class _ProfileViewState extends State<ProfileView> {
   XFile? _image;
   late Reference profilePhotosStorage;
   DatabaseReference? usersPfpRef;
+  String? parentKey;
   String imageUrl = 'https://i.ibb.co/LYWq2R3/doggo.jpg';
   @override
   void initState() {
     super.initState();
     profilePhotosStorage = FirebaseStorage.instance.ref("pfps");
-    getPfp();
+    getPfp(widget.index);
   }
 
-  void getPfp() async {
-    usersPfpRef = FirebaseDatabase.instance.ref("users/Name ${widget.index}");
+  void getPfp(int i) async {
+    usersPfpRef = FirebaseDatabase.instance.ref('users/');
+    final data = await usersPfpRef!.get();
+    print(data.value);
+    final map = Map<dynamic, dynamic>.from(data.value as Map<dynamic, dynamic>);
+    parentKey;
+    int count = 0;
+    map.forEach((key, value) {
+      if (count == i) {
+        parentKey = key.toString();
+      }
+      count++;
+    });
+    usersPfpRef = FirebaseDatabase.instance.ref("users/$parentKey");
     if (usersPfpRef != null) {
       final snapshot = await usersPfpRef!.child('/profilePicUrl').get();
       if (snapshot.exists) {
@@ -67,7 +80,7 @@ class _ProfileViewState extends State<ProfileView> {
               width: MediaQuery.of(context).size.width,
               child: StreamBuilder<Object>(
                   stream: FirebaseDatabase.instance
-                      .ref("users/Name ${widget.index}")
+                      .ref("users/$parentKey;")
                       .onValue,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
@@ -96,7 +109,7 @@ class _ProfileViewState extends State<ProfileView> {
                                     children: [
                                       Text(
                                         widget.name,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.blue,
                                           fontSize: 30,
@@ -104,7 +117,7 @@ class _ProfileViewState extends State<ProfileView> {
                                       ),
                                       Spacer(),
                                       IconButton(
-                                        icon: Icon(
+                                        icon: const Icon(
                                           Icons.camera_alt_rounded,
                                           color: Colors.blue,
                                         ),

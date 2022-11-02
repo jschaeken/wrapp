@@ -48,15 +48,29 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> baseNames = [
     'Jacques',
     'Carl',
-    'Another name',
-    'Another name',
-    'Another name',
-    'Another name',
-    'Another name',
-    'Another name',
-    'Another name',
+    'Daniel',
+    'Calem',
+    'Harry',
+    'Shane',
+    'Sean',
+    'Rory',
+    'Eoin',
+    'James',
   ];
   List<String> namePaths = [];
+
+  static List<String> constantNames = [
+    'Jacques',
+    'Carl',
+    'Daniel',
+    'Calem',
+    'Harry',
+    'Shane',
+    'Sean',
+    'Rory',
+    'Eoin',
+    'James',
+  ];
 
   List<Color> colorSwitches = [
     Colors.blue,
@@ -86,10 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     notiDatabase = FirebaseDatabase.instance.ref("notis");
     usersDatabase = FirebaseDatabase.instance.ref("users");
-    usersStream = widget.isMobile
-        ? usersDatabase!.orderByKey().limitToFirst(10).onValue
-        : null;
-    widget.isMobile ? notiSet() : null;
+    usersStream = usersDatabase.orderByKey().limitToFirst(10).onValue;
+    notiSet();
   }
 
   FirebaseMessaging? messaging;
@@ -114,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final newPostKey = usersDatabase.push().key;
     final Map<String, Map> updates = {};
     final postData = {
-      'Name ${i.toString()}': baseNames[i],
+      'name': constantNames[i],
     };
     print(postData);
     updates['/$newPostKey'] = postData;
@@ -144,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder: ((context, setState) {
                         return AlertDialog(
                           scrollable: true,
-                          title: Text('WR Alert'),
+                          title: const Text('WR Alert'),
                           content: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Form(
@@ -154,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   TextFormField(
                                     autofocus: true,
                                     keyboardType: TextInputType.name,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       labelText: 'Alert',
                                     ),
                                     controller: textControl,
@@ -195,7 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             StreamBuilder(
-              stream: notiDatabase!.orderByKey().limitToLast(1).onValue,
+              stream: notiDatabase.orderByKey().limitToLast(1).onValue,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if ((snapshot.data as DatabaseEvent).snapshot.value != null) {
@@ -277,7 +289,9 @@ class _MyHomePageState extends State<MyHomePage> {
             MaterialButton(
               onPressed: (() {
                 setState(() {
-                  for (int i = 0; i < baseNames.length; i++) {
+                  usersDatabase.remove();
+                  for (int i = 0; i < constantNames.length; i++) {
+                    print('in set state: ${constantNames[i]}');
                     setNames(i);
                   }
                 });
@@ -306,35 +320,37 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: FutureBuilder(
-                  future:
-                      usersDatabase.orderByPriority().limitToFirst(10).get(),
-                  builder: (context, event) {
-                    if (event.data != null) {
+                  future: usersDatabase.get(),
+                  builder: (context, snapshot) {
+                    if (snapshot.data != null) {
                       final data = Map<dynamic, dynamic>.from(
-                          (event.data as DataSnapshot).value
+                          (snapshot.data as DataSnapshot).value
                               as Map<dynamic, dynamic>);
+                      baseNames.clear();
                       data.forEach((key, value) {
                         var detail = Map<dynamic, dynamic>.from(value);
+                        baseNames.add(detail['name']);
                       });
                     }
-                    return (event.connectionState != ConnectionState.done)
+                    return (snapshot.connectionState != ConnectionState.done)
                         ? const Center(
                             child: CircularProgressIndicator(),
                           )
-                        : (SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: ListView.separated(
+                        : Column(children: [
+                            (ListView.separated(
+                              physics: const AlwaysScrollableScrollPhysics(),
                               itemCount: baseNames.length,
                               shrinkWrap: true,
                               itemBuilder: (BuildContext context, int index) {
                                 return MaterialButton(
-                                  onPressed: () => {
+                                  onPressed: () {
+                                    Navigator.pop(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => ProfileView(
                                               baseNames[index], index)),
-                                    ),
+                                    );
                                   },
                                   height: 50,
                                   color: Theme.of(context).colorScheme.primary,
@@ -354,8 +370,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   height: 10,
                                 );
                               },
-                            ),
-                          ));
+                            )),
+                          ]);
                   }),
             ),
           ],
