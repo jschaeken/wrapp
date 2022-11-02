@@ -1,16 +1,27 @@
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'HomePage.dart';
 import 'Screens/ProfileView.dart';
 import 'firebase_options.dart';
 
+bool isMobile = false;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  isMobile = Platform.isIOS || Platform.isAndroid;
+  isMobile
+      ? await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform)
+      : null;
   runApp(const MyApp());
+  FirebaseAuth mAuth = FirebaseAuth.instance;
+  User? user = mAuth.currentUser;
+  if (user == null) {
+    mAuth.signInAnonymously();
+  }
 }
-
-void initFirebase() async {}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -22,9 +33,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: _customColorScheme,
       ),
-      home: const MyHomePage(title: 'Welcome to the WR App'),
+      home: MyHomePage(title: 'Welcome to the WR App', isMobile),
       routes: {
-        '/profile': (context) => ProfileView('const Test User'),
+        '/profile': (context) => ProfileView('const Test User', 0),
       },
     );
   }

@@ -90,7 +90,7 @@ class _DQListState extends State<DQList> {
                                   TextFormField(
                                     autofocus: true,
                                     keyboardType: TextInputType.text,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       labelText: 'DQ',
                                     ),
                                     controller: textControl,
@@ -133,7 +133,7 @@ class _DQListState extends State<DQList> {
                     );
                   });
             },
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
           ),
         ],
       ),
@@ -153,47 +153,35 @@ class _DQListState extends State<DQList> {
               });
             }
           }
-          return (snapshot.connectionState != ConnectionState.active)
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : SingleChildScrollView(
-                  child: ListView.separated(
-                    physics: const ScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: nameAndTextList.length,
-                    itemBuilder: (_, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              flex: 1,
-                              child: Text(
-                                '${nameAndTextList[index].text} - ${nameAndTextList[index].name}',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            IconButton(
-                                icon: Icon(
-                                    isFavorited[index]
-                                        ? Icons.favorite
-                                        : Icons.favorite_border_rounded,
-                                    color: Colors.red),
-                                onPressed: () => {dQFav(index)}),
-                          ],
-                        ),
-                      );
-                    },
-                    separatorBuilder: (_, index) {
-                      return const SizedBox(
-                        height: 10,
-                      );
-                    },
+          return SingleChildScrollView(
+            child: ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: nameAndTextList.length,
+              itemBuilder: (_, index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListTile(
+                    title: Text(
+                      '${nameAndTextList[index].text} - ${nameAndTextList[index].name}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text('Input by X'),
+                    trailing: IconButton(
+                        icon: Icon(
+                            isFavorited[index]
+                                ? Icons.favorite
+                                : Icons.favorite_border_rounded,
+                            color: Colors.red),
+                        onPressed: () => {dQFav(index)}),
                   ),
                 );
+              },
+              separatorBuilder: (context, index) {
+                return const Divider();
+              },
+            ),
+          );
         },
       ),
     );
@@ -208,16 +196,6 @@ class _DQListState extends State<DQList> {
       },
     );
   }
-
-  // Storage storageController = Storage();
-  // var key = 'dqList';
-  // void commitToLocal(String newEntry) {
-  //   storageController.storeData(key, newEntry);
-  // }
-
-  // Future<List<String>> getFromLocal() async {
-  //   return storageController.retrieveData(key);
-  // }
 }
 
 class NameAndText {

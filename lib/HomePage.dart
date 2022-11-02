@@ -4,13 +4,16 @@ import 'package:wrapp/Screens/Betting.dart';
 import 'package:wrapp/Screens/DQList.dart';
 import 'package:wrapp/Screens/ProfileView.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'Screens/Voting.dart';
 import 'firebase_options.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage(this.isMobile, {Key? key, required this.title})
+      : super(key: key);
   final String title;
+  final bool isMobile;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -42,7 +45,18 @@ class _MyHomePageState extends State<MyHomePage> {
     ),
   ];
 
-  List<String> baseNames = [];
+  List<String> baseNames = [
+    'Jacques',
+    'Carl',
+    'Another name',
+    'Another name',
+    'Another name',
+    'Another name',
+    'Another name',
+    'Another name',
+    'Another name',
+  ];
+  List<String> namePaths = [];
 
   List<Color> colorSwitches = [
     Colors.blue,
@@ -63,32 +77,48 @@ class _MyHomePageState extends State<MyHomePage> {
     Voting(),
     DQList(),
   ];
+
   late DatabaseReference usersDatabase;
   late DatabaseReference notiDatabase;
-  late Stream<DatabaseEvent> usersStream;
+  Stream<DatabaseEvent>? usersStream;
   @override
   void initState() {
     super.initState();
     notiDatabase = FirebaseDatabase.instance.ref("notis");
     usersDatabase = FirebaseDatabase.instance.ref("users");
-    usersStream = usersDatabase.orderByKey().limitToFirst(10).onValue;
+    usersStream = widget.isMobile
+        ? usersDatabase!.orderByKey().limitToFirst(10).onValue
+        : null;
+    widget.isMobile ? notiSet() : null;
   }
 
-  // Stream<DatabaseEvent> getNewStream() {
-  //   return usersDatabase!
-  //       .orderByKey()
-  //       .limitToFirst(10)
-  //       .onValue
-  //       .asBroadcastStream(
-  //     onCancel: (controller) {
-  //       print('Stream cancelled');
-  //       controller.cancel();
-  //     },
-  //   );
-  // }
+  FirebaseMessaging? messaging;
+  NotificationSettings? settings;
+
+  void notiSet() async {
+    messaging = FirebaseMessaging.instance;
+    settings = await messaging!.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    print('User granted permission: ${settings!.authorizationStatus}');
+  }
 
   void setNames(int i) async {
-    usersDatabase.update({'Name ${i.toString()}': baseNames[i]});
+    final newPostKey = usersDatabase.push().key;
+    final Map<String, Map> updates = {};
+    final postData = {
+      'Name ${i.toString()}': baseNames[i],
+    };
+    print(postData);
+    updates['/$newPostKey'] = postData;
+    usersDatabase.update(updates);
   }
 
   @override
@@ -138,14 +168,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: const Text("Send Alert Message"),
                                 onPressed: () {
                                   setState(() {
-                                    final newPostKey = notiDatabase.push().key;
+                                    final newPostKey = notiDatabase!.push().key;
                                     final Map<String, Map> updates = {};
                                     final postData = {
                                       'text': textControl.text,
                                       'name': 'Jacques'
                                     };
                                     updates['/$newPostKey'] = postData;
-                                    notiDatabase.update(updates);
+                                    notiDatabase!.update(updates);
+                                    textControl.clear();
                                     Navigator.pop(context);
                                   });
                                 })
@@ -164,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             StreamBuilder(
-              stream: notiDatabase.orderByKey().limitToLast(1).onValue,
+              stream: notiDatabase!.orderByKey().limitToLast(1).onValue,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if ((snapshot.data as DatabaseEvent).snapshot.value != null) {
@@ -258,34 +289,36 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: Drawer(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Text(
-                  'Profiles',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Text(
+                    'Profiles',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: FutureBuilder(
-                  future: usersDatabase.orderByKey().limitToFirst(10).get(),
+                  future:
+                      usersDatabase.orderByPriority().limitToFirst(10).get(),
                   builder: (context, event) {
-                    baseNames.clear();
-                    Map<dynamic, dynamic>? dataMap;
-                    if (event.hasData) {
-                      dataMap = (event.data as DataSnapshot).value
-                          as Map<dynamic, dynamic>;
-                      dataMap.forEach((key, value) {
-                        print(value);
-                        baseNames.add(value);
+                    if (event.data != null) {
+                      final data = Map<dynamic, dynamic>.from(
+                          (event.data as DataSnapshot).value
+                              as Map<dynamic, dynamic>);
+                      data.forEach((key, value) {
+                        var detail = Map<dynamic, dynamic>.from(value);
                       });
                     }
                     return (event.connectionState != ConnectionState.done)
-                        ? Center(
+                        ? const Center(
                             child: CircularProgressIndicator(),
                           )
                         : (SingleChildScrollView(
@@ -299,14 +332,20 @@ class _MyHomePageState extends State<MyHomePage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              ProfileView(baseNames[index])),
+                                          builder: (context) => ProfileView(
+                                              baseNames[index], index)),
                                     ),
                                   },
                                   height: 50,
-                                  color:
-                                      Theme.of(context).colorScheme.background,
-                                  child: Center(child: Text(baseNames[index])),
+                                  color: Theme.of(context).colorScheme.primary,
+                                  child: Center(
+                                      child: Text(
+                                    baseNames[index],
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary),
+                                  )),
                                 );
                               },
                               separatorBuilder:
@@ -322,18 +361,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   items: const [
-      //     BottomNavigationBarItem(
-      //       label: 'Home',
-      //       icon: Icon(Icons.home),
-      //     ),
-      //     BottomNavigationBarItem(
-      //       label: 'Favorites',
-      //       icon: Icon(Icons.favorite),
-      //     ),
-      //   ],
-      // ),
     );
   }
 }
