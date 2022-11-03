@@ -55,10 +55,14 @@ class _DQListState extends State<DQList> {
 
   String dropdownvalue = 'Select Name';
 
-  void setDqs(NameAndText nameAndText) async {
+  void setDqs(NameAndText nameAndText, bool isFav) async {
     final newPostKey = dqDatabase.push().key;
     final Map<String, Map> updates = {};
-    final postData = {'text': nameAndText.text, 'name': nameAndText.name};
+    final postData = {
+      'text': nameAndText.text,
+      'name': nameAndText.name,
+      'isFavorite': isFav
+    };
     updates['/$newPostKey'] = postData;
     dqDatabase.update(updates);
   }
@@ -66,7 +70,6 @@ class _DQListState extends State<DQList> {
   @override
   Widget build(BuildContext context) {
     TextEditingController textControl = TextEditingController();
-    // List<NameAndText> nameAndTextList = [];
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -120,9 +123,11 @@ class _DQListState extends State<DQList> {
                                 child: const Text("Add"),
                                 onPressed: () {
                                   setState(() {
-                                    setDqs(NameAndText(
-                                        text: textControl.text,
-                                        name: dropdownvalue));
+                                    setDqs(
+                                        NameAndText(
+                                            text: textControl.text,
+                                            name: dropdownvalue),
+                                        false);
                                     // getDqs();
                                     // print(nameAndTextList.length);
                                     Navigator.pop(context);
@@ -149,8 +154,10 @@ class _DQListState extends State<DQList> {
                       as Map<dynamic, dynamic>);
               data.forEach((key, value) {
                 var detail = Map<dynamic, dynamic>.from(value);
-                nameAndTextList.add(
-                    NameAndText(text: detail['text'], name: detail['name']));
+                if (detail.containsKey('text') && detail.containsKey('name')) {
+                  nameAndTextList.add(
+                      NameAndText(text: detail['text'], name: detail['name']));
+                }
               });
             }
           }
@@ -188,7 +195,9 @@ class _DQListState extends State<DQList> {
                               ? Icons.favorite
                               : Icons.favorite_border_rounded,
                           color: Colors.red),
-                      onPressed: () => {dQFav(index)}),
+                      onPressed: () async {
+                        isFavorited[index] = await dQFav(index) ?? false;
+                      }),
                 ),
               );
             },
@@ -203,7 +212,6 @@ class _DQListState extends State<DQList> {
 
   void deleteDq(int i) async {
     final data = await dqDatabase.get();
-    print(data.value);
     final map = Map<dynamic, dynamic>.from(data.value as Map<dynamic, dynamic>);
     String? parentKey;
     int count = 0;
@@ -218,14 +226,27 @@ class _DQListState extends State<DQList> {
     }
   }
 
-  void dQFav(int index) {
-    setState(
-      () {
-        bool temp = isFavorited[index];
-        isFavorited.removeAt(index);
-        isFavorited.insert(index, !temp);
-      },
-    );
+  Future<bool?> dQFav(int index) async {
+    final data = await dqDatabase.get();
+    print(data.value);
+    final map = Map<dynamic, dynamic>.from(data.value as Map<dynamic, dynamic>);
+    String? parentKey;
+    int count = 0;
+    bool likeStatus;
+    map.forEach((key, value) {
+      if (count == index) {
+        parentKey = key.toString();
+      }
+      count++;
+    });
+    final mapReturned = await dqDatabase.child('${parentKey!}').get();
+    likeStatus = (mapReturned.value as Map<dynamic, dynamic>)['isFavorite'];
+    if (parentKey != null) {
+      final postData = {'isFavorite': !likeStatus};
+      dqDatabase.child('/$parentKey').update(postData);
+      return !likeStatus;
+    }
+    return null;
   }
 }
 

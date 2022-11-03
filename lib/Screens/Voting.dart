@@ -24,7 +24,6 @@ class _VotingState extends State<Voting> {
             children: [
               Text('This or That'),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   IconButton(
                       onPressed: () {},

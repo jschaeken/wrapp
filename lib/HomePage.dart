@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:wrapp/Screens/Betting.dart';
 import 'package:wrapp/Screens/DQList.dart';
+import 'package:wrapp/Screens/NewProfileView.dart';
 import 'package:wrapp/Screens/ProfileView.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -180,14 +181,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: const Text("Send Alert Message"),
                                 onPressed: () {
                                   setState(() {
-                                    final newPostKey = notiDatabase!.push().key;
+                                    final newPostKey = notiDatabase.push().key;
                                     final Map<String, Map> updates = {};
                                     final postData = {
                                       'text': textControl.text,
                                       'name': 'Jacques'
                                     };
                                     updates['/$newPostKey'] = postData;
-                                    notiDatabase!.update(updates);
+                                    notiDatabase.update(updates);
                                     textControl.clear();
                                     Navigator.pop(context);
                                   });
@@ -286,17 +287,26 @@ class _MyHomePageState extends State<MyHomePage> {
             Spacer(
               flex: 1,
             ),
+            // MaterialButton(
+            //   onPressed: (() {
+            //     setState(() {
+            //       usersDatabase.remove();
+            //       for (int i = 0; i < constantNames.length; i++) {
+            //         print('in set state: ${constantNames[i]}');
+            //         setNames(i);
+            //       }
+            //     });
+            //   }),
+            //   child: Text('Add names'),
+            // ),
             MaterialButton(
               onPressed: (() {
-                setState(() {
-                  usersDatabase.remove();
-                  for (int i = 0; i < constantNames.length; i++) {
-                    print('in set state: ${constantNames[i]}');
-                    setNames(i);
-                  }
-                });
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const NewProfileView()));
               }),
-              child: Text('Add names'),
+              child: Text('New profile view'),
             ),
           ],
         ),

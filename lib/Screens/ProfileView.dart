@@ -71,92 +71,86 @@ class _ProfileViewState extends State<ProfileView> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
+        centerTitle: true,
+        title: Text(widget.name),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.width * 4 / 3,
-              width: MediaQuery.of(context).size.width,
-              child: StreamBuilder<Object>(
-                  stream: FirebaseDatabase.instance
-                      .ref("users/$parentKey;")
-                      .onValue,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      if ((snapshot.data as DatabaseEvent).snapshot.value !=
-                          null) {
-                        final data = Map<dynamic, dynamic>.from(
-                            (snapshot.data as DatabaseEvent).snapshot.value
-                                as Map<dynamic, dynamic>);
-                        imageUrl = data['profilePicUrl'];
-                      }
+      body: Column(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.width * 4 / 3,
+            width: MediaQuery.of(context).size.width,
+            child: FutureBuilder(
+                future: FirebaseDatabase.instance.ref("users/$parentKey").get(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final data = (snapshot.data as DataSnapshot);
+                    if (data.exists) {
+                      final map = Map<dynamic, dynamic>.from(
+                          data.value as Map<dynamic, dynamic>);
+                      map.forEach((key, value) {
+                        if (key == 'profilePicUrl') {
+                          imageUrl = value;
+                        }
+                      });
+                    } else {
+                      imageUrl = 'https://i.redd.it/2o4askcf60o81.jpg';
                     }
-                    return Container(
-                      decoration: BoxDecoration(
-                          image:
-                              DecorationImage(image: NetworkImage(imageUrl))),
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        widget.name,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.blue,
-                                          fontSize: 30,
-                                        ),
+                  } else {
+                    imageUrl = 'https://i.redd.it/2o4askcf60o81.jpg';
+                  }
+                  return snapshot.connectionState == ConnectionState.done
+                      ? Container(
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: NetworkImage(imageUrl))),
+                          child: Stack(
+                            children: [
+                              Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          Spacer(),
+                                          IconButton(
+                                            icon: const Icon(
+                                              Icons.camera_alt_rounded,
+                                              color: Colors.black,
+                                            ),
+                                            onPressed: () async {
+                                              ImagePicker _picker =
+                                                  ImagePicker();
+                                              _image = await _picker.pickImage(
+                                                  source: ImageSource.camera);
+                                              if (_image != null) {
+                                                imageUrl =
+                                                    await uploadPhoto(_image!);
+                                                usersPfpRef!.update({
+                                                  'profilePicUrl': imageUrl
+                                                });
+                                                setState(() {});
+                                              }
+                                            },
+                                          ),
+                                        ],
                                       ),
-                                      Spacer(),
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.camera_alt_rounded,
-                                          color: Colors.blue,
-                                        ),
-                                        onPressed: () async {
-                                          ImagePicker _picker = ImagePicker();
-                                          // Pick an image
-                                          _image = await _picker.pickImage(
-                                              source: ImageSource.camera);
-                                          if (_image != null) {
-                                            imageUrl =
-                                                await uploadPhoto(_image!);
-                                            usersPfpRef!.update(
-                                                {'profilePicUrl': '$imageUrl'});
-                                            setState(() {});
-                                          }
-                                        },
-                                      ),
-                                      image == null
-                                          ? const SizedBox()
-                                          : const SizedBox(),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  }),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: TextField(
-                maxLines: 3,
-              ),
-            ),
-          ],
-        ),
+                        )
+                      : Container(
+                          width: 300,
+                          height: 300,
+                          child: CircularProgressIndicator());
+                }),
+          ),
+        ],
       ),
     );
   }
