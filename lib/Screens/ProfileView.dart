@@ -36,7 +36,6 @@ class _ProfileViewState extends State<ProfileView> {
     final data = await usersPfpRef!.get();
     print(data.value);
     final map = Map<dynamic, dynamic>.from(data.value as Map<dynamic, dynamic>);
-    parentKey;
     int count = 0;
     map.forEach((key, value) {
       if (count == i) {
@@ -44,13 +43,6 @@ class _ProfileViewState extends State<ProfileView> {
       }
       count++;
     });
-    usersPfpRef = FirebaseDatabase.instance.ref("users/$parentKey");
-    if (usersPfpRef != null) {
-      final snapshot = await usersPfpRef!.child('/profilePicUrl').get();
-      if (snapshot.exists) {
-        imageUrl = snapshot.value.toString();
-      }
-    }
   }
 
   Future<String> uploadPhoto(XFile file) async {

@@ -304,7 +304,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const NewProfileView()));
+                        builder: (context) => NewProfileView('Jacques', 0)));
               }),
               child: Text('New profile view'),
             ),
@@ -358,7 +358,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => ProfileView(
+                                          builder: (context) => NewProfileView(
                                               baseNames[index], index)),
                                     );
                                   },
