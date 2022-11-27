@@ -203,6 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
+      //Body
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -238,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 lastNoti,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 40,
                                 ),
@@ -260,131 +261,210 @@ class _MyHomePageState extends State<MyHomePage> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
-                  return MaterialButton(
-                    height: 50,
-                    onPressed: () => {
+                  return GestureDetector(
+                    onTap: () => {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => screens[index]),
                       )
                     },
-                    color: colorSwitches[index % colorSwitches.length],
-                    child: Center(
-                        child: Text(
-                      topics[index],
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary),
-                    )),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: colorSwitches[index % colorSwitches.length],
+                      ),
+                      height: 50,
+                      child: Center(
+                          child: Text(
+                        topics[index],
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onPrimary),
+                      )),
+                    ),
                   );
                 },
                 separatorBuilder: (BuildContext context, int index) {
-                  return SizedBox(
+                  return const SizedBox(
                     height: 10,
                   );
                 },
               ),
             ),
-            Spacer(
-              flex: 1,
+            const Divider(
+              thickness: 3,
             ),
-            // MaterialButton(
-            //   onPressed: (() {
-            //     setState(() {
-            //       usersDatabase.remove();
-            //       for (int i = 0; i < constantNames.length; i++) {
-            //         print('in set state: ${constantNames[i]}');
-            //         setNames(i);
-            //       }
-            //     });
-            //   }),
-            //   child: Text('Add names'),
-            // ),
-            MaterialButton(
-              onPressed: (() {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NewProfileView('Jacques', 0)));
-              }),
-              child: Text('New profile view'),
+            Row(
+              children: const [
+                Text(
+                  'Members',
+                  style: TextStyle(
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-      drawer: Drawer(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: Text(
-                    'Profiles',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+            SizedBox(
+              height: 10,
+            ),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: .7,
+                    crossAxisCount: 2),
+                itemCount: baseNames.length,
+                itemBuilder: (context, i) => Center(
+                  child: ProfileTile(
+                    onPressed: (() => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  NewProfileView(baseNames[i], i)),
+                        )),
+                    baseNames: baseNames,
+                    index: i,
                   ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: FutureBuilder(
-                  future: usersDatabase.get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.data != null) {
-                      final data = Map<dynamic, dynamic>.from(
-                          (snapshot.data as DataSnapshot).value
-                              as Map<dynamic, dynamic>);
-                      baseNames.clear();
-                      data.forEach((key, value) {
-                        var detail = Map<dynamic, dynamic>.from(value);
-                        baseNames.add(detail['name']);
-                      });
-                    }
-                    return (snapshot.connectionState != ConnectionState.done)
-                        ? const Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : Column(children: [
-                            (ListView.separated(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              itemCount: baseNames.length,
-                              shrinkWrap: true,
-                              itemBuilder: (BuildContext context, int index) {
-                                return MaterialButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => NewProfileView(
-                                              baseNames[index], index)),
-                                    );
-                                  },
-                                  height: 50,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  child: Center(
-                                      child: Text(
-                                    baseNames[index],
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary),
-                                  )),
-                                );
-                              },
-                              separatorBuilder:
-                                  (BuildContext context, int index) {
-                                return const SizedBox(
-                                  height: 10,
-                                );
-                              },
-                            )),
-                          ]);
-                  }),
-            ),
           ],
+        ),
+      ),
+      //Drawer
+      // drawer: Drawer(
+      //   child: Column(
+      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //     children: [
+      //       const Padding(
+      //         padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
+      //         child: Center(
+      //           child: Padding(
+      //             padding: EdgeInsets.all(20.0),
+      //             child: Text(
+      //               'Profiles',
+      //               style: TextStyle(fontWeight: FontWeight.bold),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //       Padding(
+      //         padding: const EdgeInsets.all(8.0),
+      //         child: FutureBuilder(
+      //             future: usersDatabase.get(),
+      //             builder: (context, snapshot) {
+      //               if (snapshot.data != null) {
+      //                 final data = Map<dynamic, dynamic>.from(
+      //                     (snapshot.data as DataSnapshot).value
+      //                         as Map<dynamic, dynamic>);
+      //                 baseNames.clear();
+      //                 data.forEach((key, value) {
+      //                   var detail = Map<dynamic, dynamic>.from(value);
+      //                   baseNames.add(detail['name']);
+      //                 });
+      //               }
+      //               return (snapshot.connectionState != ConnectionState.done)
+      //                   ? const Center(
+      //                       child: CircularProgressIndicator(),
+      //                     )
+      //                   : Column(children: [
+      //                       (ListView.separated(
+      //                         physics: const AlwaysScrollableScrollPhysics(),
+      //                         itemCount: baseNames.length,
+      //                         shrinkWrap: true,
+      //                         itemBuilder: (BuildContext context, int index) {
+      //                           return MaterialButton(
+      //                             onPressed: () {
+      //                               Navigator.pop(context);
+      //                               Navigator.push(
+      //                                 context,
+      //                                 MaterialPageRoute(
+      //                                     builder: (context) => NewProfileView(
+      //                                         baseNames[index], index)),
+      //                               );
+      //                             },
+      //                             height: 50,
+      //                             color: Theme.of(context).colorScheme.primary,
+      //                             child: Center(
+      //                                 child: Text(
+      //                               baseNames[index],
+      //                               style: TextStyle(
+      //                                   color: Theme.of(context)
+      //                                       .colorScheme
+      //                                       .onPrimary),
+      //                             )),
+      //                           );
+      //                         },
+      //                         separatorBuilder:
+      //                             (BuildContext context, int index) {
+      //                           return const SizedBox(
+      //                             height: 10,
+      //                           );
+      //                         },
+      //                       )),
+      //                     ]);
+      //             }),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+    );
+  }
+}
+
+class ProfileTile extends StatelessWidget {
+  const ProfileTile({
+    Key? key,
+    required this.baseNames,
+    required this.index,
+    required this.onPressed,
+  }) : super(key: key);
+
+  final List<String> baseNames;
+  final int index;
+  final Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: GestureDetector(
+          onTap: () => onPressed(),
+          child: Container(
+            alignment: Alignment.bottomLeft,
+            decoration: BoxDecoration(
+              image: const DecorationImage(
+                  image: NetworkImage(
+                    'https://media-exp1.licdn.com/dms/image/D4E03AQEqryHbQEfomg/profile-displayphoto-shrink_400_400/0/1666277454062?e=1674691200&v=beta&t=NlXxUiEe0ngVzbxixTkJWTbh3WcHTBzBRyt7avqp7mg',
+                  ),
+                  fit: BoxFit.cover),
+              color: Colors.grey[900],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+                color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8),
+              ),
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Text(
+                  baseNames[index],
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );

@@ -11,36 +11,24 @@ class Voting extends StatefulWidget {
 }
 
 class _VotingState extends State<Voting> {
+  double val = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Text('This or That'),
-              Row(
-                children: [
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.favorite,
-                        size: 50,
-                      )),
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.heart_broken,
-                        size: 50,
-                      )),
-                ],
-              ),
-            ],
-          ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text('This or That'),
+            Slider(
+                value: val,
+                onChanged: (d) => setState(() {
+                      val = d;
+                    })),
+          ],
         ),
       ),
     );

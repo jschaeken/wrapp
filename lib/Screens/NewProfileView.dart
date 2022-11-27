@@ -45,15 +45,17 @@ class _NewProfileViewState extends State<NewProfileView> {
         slivers: <Widget>[
           SliverAppBar(
             pinned: true,
-            title: IconButton(
+            leading: IconButton(
                 icon: Icon(Icons.close_rounded),
                 onPressed: () {
                   Navigator.pop(context);
                 }),
-            automaticallyImplyLeading: false,
             expandedHeight: 250.0,
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(widget.name),
+              // title: Text(
+              //   widget.name,
+              //   style: TextStyle(color: Colors.black),
+              // ),
               background: FutureBuilder(
                 future: FirebaseDatabase.instance.ref("users/$parentKey").get(),
                 builder: (context, snapshot) {
@@ -71,33 +73,33 @@ class _NewProfileViewState extends State<NewProfileView> {
                       imageUrl = 'https://i.redd.it/2o4askcf60o81.jpg';
                     }
                   } else {
-                    imageUrl = 'https://i.redd.it/2o4askcf60o81.jpg';
+                    imageUrl = '';
                   }
                   return snapshot.connectionState == ConnectionState.done
                       ? Image.network(
                           imageUrl ?? 'https://i.redd.it/2o4askcf60o81.jpg',
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fill,
                         )
                       : CircularProgressIndicator();
                 },
               ),
             ),
           ),
-          //3
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (_, int index) {
-                return ListTile(
-                  onTap: () => showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            content: Text('Dq ${index + 1}'),
-                          )),
-                  title: Text('DQ ${index + 1}'),
-                );
-              },
-            ),
-          ),
+          SliverToBoxAdapter(
+              child: Column(
+            children: [
+              Center(
+                child: Text(
+                  widget.name,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 35,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              Text('DQs will be held here')
+            ],
+          )),
         ],
       ),
     );
