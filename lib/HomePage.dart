@@ -21,30 +21,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Widget> widgetList = [
-    MaterialButton(
-      height: 250,
-      color: Colors.blue,
-      onPressed: () => {},
-      child: Text('Button'),
-    ),
-    MaterialButton(
-      onPressed: () => {},
-      child: Text('Button'),
-    ),
-    MaterialButton(
-      onPressed: () => {},
-      child: Text('Button'),
-    ),
-    MaterialButton(
-      onPressed: () => {},
-      child: Text('Button'),
-    ),
-    MaterialButton(
-      onPressed: () => {},
-      child: Text('Button'),
-    ),
-  ];
+  List<Widget> widgetList = [];
 
   List<String> baseNames = [
     'Jacques',
@@ -71,6 +48,19 @@ class _MyHomePageState extends State<MyHomePage> {
     'Rory',
     'Eoin',
     'James',
+  ];
+
+  List<String> imgPaths = [
+    'https://media-exp1.licdn.com/dms/image/D4E03AQEqryHbQEfomg/profile-displayphoto-shrink_400_400/0/1666277454062?e=1674691200&v=beta&t=NlXxUiEe0ngVzbxixTkJWTbh3WcHTBzBRyt7avqp7mg',
+    'https://i.ibb.co/mcqVr6v/gruMeme.jpg',
+    'https://i.ibb.co/mcqVr6v/gruMeme.jpg',
+    'https://i.ibb.co/mcqVr6v/gruMeme.jpg',
+    'https://i.ibb.co/mcqVr6v/gruMeme.jpg',
+    'https://i.ibb.co/mcqVr6v/gruMeme.jpg',
+    'https://i.ibb.co/mcqVr6v/gruMeme.jpg',
+    'https://i.ibb.co/mcqVr6v/gruMeme.jpg',
+    'https://i.ibb.co/mcqVr6v/gruMeme.jpg',
+    'https://i.ibb.co/mcqVr6v/gruMeme.jpg',
   ];
 
   List<Color> colorSwitches = [
@@ -204,212 +194,171 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       //Body
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            StreamBuilder(
-              stream: notiDatabase.orderByKey().limitToLast(1).onValue,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  if ((snapshot.data as DatabaseEvent).snapshot.value != null) {
-                    final data = Map<dynamic, dynamic>.from(
-                        (snapshot.data as DatabaseEvent).snapshot.value
-                            as Map<dynamic, dynamic>);
-                    data.forEach((key, value) {
-                      var detail = Map<dynamic, dynamic>.from(value);
-                      lastNoti = detail['text'];
-                      lastNotiName = detail['name'];
-                    });
+      body: SingleChildScrollView(
+        controller: ScrollController(),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              StreamBuilder(
+                stream: notiDatabase.orderByKey().limitToLast(1).onValue,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    if ((snapshot.data as DatabaseEvent).snapshot.value !=
+                        null) {
+                      final data = Map<dynamic, dynamic>.from(
+                          (snapshot.data as DatabaseEvent).snapshot.value
+                              as Map<dynamic, dynamic>);
+                      data.forEach((key, value) {
+                        var detail = Map<dynamic, dynamic>.from(value);
+                        lastNoti = detail['text'];
+                        lastNotiName = detail['name'];
+                      });
+                    }
                   }
-                }
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(width: 3),
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Text('Latest Announcement from $lastNotiName'),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                lastNoti,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 40,
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 3),
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Text('Latest Announcement from $lastNotiName'),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  lastNoti,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 40,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView.separated(
-                itemCount: screens.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: () => {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => screens[index]),
-                      )
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: colorSwitches[index % colorSwitches.length],
-                      ),
-                      height: 50,
-                      child: Center(
-                          child: Text(
-                        topics[index],
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onPrimary),
-                      )),
-                    ),
-                  );
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return const SizedBox(
-                    height: 10,
                   );
                 },
               ),
-            ),
-            const Divider(
-              thickness: 3,
-            ),
-            Row(
-              children: const [
-                Text(
-                  'Members',
-                  style: TextStyle(
-                    fontSize: 35,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: .7,
-                    crossAxisCount: 2),
-                itemCount: baseNames.length,
-                itemBuilder: (context, i) => Center(
-                  child: ProfileTile(
-                    onPressed: (() => Navigator.push(
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListView.separated(
+                  itemCount: screens.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      onTap: () => {
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  NewProfileView(baseNames[i], i)),
+                              builder: (context) => screens[index]),
+                        )
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: colorSwitches[index % colorSwitches.length],
+                        ),
+                        height: 50,
+                        child: Center(
+                            child: Text(
+                          topics[index],
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onPrimary),
                         )),
-                    baseNames: baseNames,
-                    index: i,
+                      ),
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return const SizedBox(
+                      height: 10,
+                    );
+                  },
+                ),
+              ),
+              const Divider(
+                thickness: 3,
+              ),
+              Row(
+                children: const [
+                  Text(
+                    'Members',
+                    style: TextStyle(
+                      fontSize: 35,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                height: 600,
+                child: Expanded(
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            childAspectRatio: .7,
+                            crossAxisCount: 2),
+                    itemCount: baseNames.length,
+                    itemBuilder: (context, i) => Center(
+                      child: ProfileTile(
+                        imagePath: imgPaths[i],
+                        onPressed: (() => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      NewProfileView(baseNames[i], i)),
+                            )),
+                        baseNames: baseNames,
+                        index: i,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-      //Drawer
-      // drawer: Drawer(
-      //   child: Column(
-      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //     children: [
-      //       const Padding(
-      //         padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
-      //         child: Center(
-      //           child: Padding(
-      //             padding: EdgeInsets.all(20.0),
-      //             child: Text(
-      //               'Profiles',
-      //               style: TextStyle(fontWeight: FontWeight.bold),
-      //             ),
-      //           ),
-      //         ),
-      //       ),
-      //       Padding(
-      //         padding: const EdgeInsets.all(8.0),
-      //         child: FutureBuilder(
-      //             future: usersDatabase.get(),
-      //             builder: (context, snapshot) {
-      //               if (snapshot.data != null) {
-      //                 final data = Map<dynamic, dynamic>.from(
-      //                     (snapshot.data as DataSnapshot).value
-      //                         as Map<dynamic, dynamic>);
-      //                 baseNames.clear();
-      //                 data.forEach((key, value) {
-      //                   var detail = Map<dynamic, dynamic>.from(value);
-      //                   baseNames.add(detail['name']);
-      //                 });
-      //               }
-      //               return (snapshot.connectionState != ConnectionState.done)
-      //                   ? const Center(
-      //                       child: CircularProgressIndicator(),
-      //                     )
-      //                   : Column(children: [
-      //                       (ListView.separated(
-      //                         physics: const AlwaysScrollableScrollPhysics(),
-      //                         itemCount: baseNames.length,
-      //                         shrinkWrap: true,
-      //                         itemBuilder: (BuildContext context, int index) {
-      //                           return MaterialButton(
-      //                             onPressed: () {
-      //                               Navigator.pop(context);
-      //                               Navigator.push(
-      //                                 context,
-      //                                 MaterialPageRoute(
-      //                                     builder: (context) => NewProfileView(
-      //                                         baseNames[index], index)),
-      //                               );
-      //                             },
-      //                             height: 50,
-      //                             color: Theme.of(context).colorScheme.primary,
-      //                             child: Center(
-      //                                 child: Text(
-      //                               baseNames[index],
-      //                               style: TextStyle(
-      //                                   color: Theme.of(context)
-      //                                       .colorScheme
-      //                                       .onPrimary),
-      //                             )),
-      //                           );
-      //                         },
-      //                         separatorBuilder:
-      //                             (BuildContext context, int index) {
-      //                           return const SizedBox(
-      //                             height: 10,
-      //                           );
-      //                         },
-      //                       )),
-      //                     ]);
-      //             }),
-      //       ),
-      //     ],
-      //   ),
-      // ),
+      drawer: SafeArea(
+        child: Drawer(
+          child: Column(children: [
+            SizedBox(
+              height: 20,
+            ),
+            GestureDetector(
+                onTap: () =>
+                    Navigator.pushReplacementNamed(context, '/loginScreen'),
+                child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Theme.of(context).colorScheme.background),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'L O G  O U T',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                            color: Theme.of(context).colorScheme.onBackground),
+                      ),
+                    )))
+          ]),
+        ),
+      ),
     );
   }
 }
@@ -420,11 +369,13 @@ class ProfileTile extends StatelessWidget {
     required this.baseNames,
     required this.index,
     required this.onPressed,
+    required this.imagePath,
   }) : super(key: key);
 
   final List<String> baseNames;
   final int index;
   final Function() onPressed;
+  final String imagePath;
 
   @override
   Widget build(BuildContext context) {
@@ -440,9 +391,9 @@ class ProfileTile extends StatelessWidget {
           child: Container(
             alignment: Alignment.bottomLeft,
             decoration: BoxDecoration(
-              image: const DecorationImage(
+              image: DecorationImage(
                   image: NetworkImage(
-                    'https://media-exp1.licdn.com/dms/image/D4E03AQEqryHbQEfomg/profile-displayphoto-shrink_400_400/0/1666277454062?e=1674691200&v=beta&t=NlXxUiEe0ngVzbxixTkJWTbh3WcHTBzBRyt7avqp7mg',
+                    imagePath,
                   ),
                   fit: BoxFit.cover),
               color: Colors.grey[900],

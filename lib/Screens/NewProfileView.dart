@@ -52,10 +52,6 @@ class _NewProfileViewState extends State<NewProfileView> {
                 }),
             expandedHeight: 250.0,
             flexibleSpace: FlexibleSpaceBar(
-              // title: Text(
-              //   widget.name,
-              //   style: TextStyle(color: Colors.black),
-              // ),
               background: FutureBuilder(
                 future: FirebaseDatabase.instance.ref("users/$parentKey").get(),
                 builder: (context, snapshot) {

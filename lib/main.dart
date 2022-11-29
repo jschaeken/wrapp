@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:wrapp/Screens/LoginScreen.dart';
 import 'HomePage.dart';
 import 'Screens/ProfileView.dart';
 import 'firebase_options.dart';
@@ -28,29 +30,33 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: _customColorScheme,
       ),
-      home: MyHomePage(title: 'Welcome to the WR App', isMobile),
+      home: LoginScreen(),
       routes: {
+        '/home': (context) => MyHomePage(title: 'Welcome to the WR App', true),
         '/profile': (context) => ProfileView('const Test User', 0),
+        '/loginScreen': (context) => LoginScreen(),
       },
     );
   }
 }
 
-const ColorScheme _customColorScheme = ColorScheme(
+ColorScheme _customColorScheme = ColorScheme(
   primary: Colors.black,
-  secondary: Colors.grey,
+  secondary: Colors.grey.shade300,
   surface: Colors.purpleAccent,
-  background: Colors.blueGrey,
+  background: Color.fromARGB(255, 38, 38, 38),
   error: Colors.black,
   onPrimary: Colors.white,
   onSecondary: Colors.white,
   onSurface: Colors.blue,
-  onBackground: Colors.blue,
+  onBackground: Colors.white,
   onError: Colors.redAccent,
   brightness: Brightness.light,
 );
