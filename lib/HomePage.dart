@@ -70,9 +70,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<String> topics = [
     'Betting',
-    'Voting',
-    'DQs',
     'Dominos Codes',
+    'DQs',
+    'Voting',
   ];
 
   List<Widget> pages = [];
