@@ -1,14 +1,12 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:wrapp/Screens/Betting.dart';
 import 'package:wrapp/Screens/DQList.dart';
+import 'package:wrapp/Screens/DomCodes.dart';
 import 'package:wrapp/Screens/NewProfileView.dart';
-import 'package:wrapp/Screens/ProfileView.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'Screens/Voting.dart';
-import 'firebase_options.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage(this.isMobile, {Key? key, required this.title})
@@ -67,20 +65,23 @@ class _MyHomePageState extends State<MyHomePage> {
     Colors.blue,
     Colors.red,
     Colors.black,
+    Colors.amber,
   ];
 
   List<String> topics = [
     'Betting',
     'Voting',
     'DQs',
+    'Dominos Codes',
   ];
 
   List<Widget> pages = [];
   int counter = 0;
   List screens = [
-    Betting(),
-    Voting(),
-    DQList(),
+    const Betting(),
+    const DomCodes(),
+    const DQList(),
+    const Voting(),
   ];
 
   late DatabaseReference usersDatabase;
@@ -189,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   })
             },
-            icon: Icon(Icons.notification_add),
+            icon: const Icon(Icons.notification_add),
           ),
         ],
       ),
@@ -299,32 +300,29 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               SizedBox(
                 height: 600,
-                child: Expanded(
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
-                            childAspectRatio: .7,
-                            crossAxisCount: 2),
-                    itemCount: baseNames.length,
-                    itemBuilder: (context, i) => Center(
-                      child: ProfileTile(
-                        imagePath: imgPaths[i],
-                        onPressed: (() => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      NewProfileView(baseNames[i], i)),
-                            )),
-                        baseNames: baseNames,
-                        index: i,
-                      ),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      childAspectRatio: .7,
+                      crossAxisCount: 2),
+                  itemCount: baseNames.length,
+                  itemBuilder: (context, i) => Center(
+                    child: ProfileTile(
+                      imagePath: imgPaths[i],
+                      onPressed: (() => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    NewProfileView(baseNames[i], i)),
+                          )),
+                      baseNames: baseNames,
+                      index: i,
                     ),
                   ),
                 ),
@@ -336,26 +334,28 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: SafeArea(
         child: Drawer(
           child: Column(children: [
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             GestureDetector(
-                onTap: () =>
-                    Navigator.pushReplacementNamed(context, '/loginScreen'),
-                child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Theme.of(context).colorScheme.background),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'L O G  O U T',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
-                            color: Theme.of(context).colorScheme.onBackground),
-                      ),
-                    )))
+              onTap: () =>
+                  Navigator.pushReplacementNamed(context, '/loginScreen'),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Theme.of(context).colorScheme.background),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'L O G  O U T',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                        color: Theme.of(context).colorScheme.onBackground),
+                  ),
+                ),
+              ),
+            ),
           ]),
         ),
       ),
@@ -401,7 +401,7 @@ class ProfileTile extends StatelessWidget {
             ),
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
                 color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8),
               ),
               width: double.infinity,
