@@ -25,8 +25,12 @@ class _EmailSignInState extends State<EmailSignIn> {
           return Scaffold(
               backgroundColor: Theme.of(context).colorScheme.background,
               body: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  Image.asset(
+                    'assets/images/wrLogo.png',
+                    scale: 2,
+                  ),
                   CustomTextField(
                     controller: emailController,
                     isEmail: true,
@@ -38,11 +42,17 @@ class _EmailSignInState extends State<EmailSignIn> {
                     isEmail: false,
                     hintText: 'Password',
                   ),
+                  const SizedBox(
+                    height: 50,
+                  ),
                   LoginPageButton(
                     text: 'S I G N   I N',
                     onPressed: () {
                       login();
                     },
+                  ),
+                  const SizedBox(
+                    height: 50,
                   ),
                 ],
               ));
@@ -76,7 +86,7 @@ class CustomTextField extends StatelessWidget {
       padding: const EdgeInsets.all(12.0),
       child: Container(
         // alignment: Alignment.bottomCenter,
-        height: 40,
+        height: 55,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: Theme.of(context).colorScheme.secondary),
@@ -90,6 +100,9 @@ class CustomTextField extends StatelessWidget {
             style: TextStyle(
                 fontSize: 20, color: Theme.of(context).colorScheme.surface),
             obscureText: !isEmail,
+            onSubmitted: (value) {
+              FocusScope.of(context).unfocus();
+            },
             decoration: InputDecoration(
               hintStyle: const TextStyle(color: Colors.grey),
               hintText: hintText,
