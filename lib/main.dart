@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       home: LoginScreen(),
       routes: {
         '/home': (context) =>
-            const MyHomePage(title: 'Welcome to the WR App', true),
+            const MyHomePage(true, title: 'Welcome to the WR App'),
         '/profile': (context) => ProfileView('const Test User', 0),
         '/loginScreen': (context) => LoginScreen(),
       },

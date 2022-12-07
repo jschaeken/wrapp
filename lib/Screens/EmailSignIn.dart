@@ -87,10 +87,11 @@ class CustomTextField extends StatelessWidget {
             controller: controller,
             keyboardType:
                 isEmail ? TextInputType.emailAddress : TextInputType.text,
-            style: const TextStyle(fontSize: 25, color: Colors.black),
+            style: TextStyle(
+                fontSize: 20, color: Theme.of(context).colorScheme.surface),
             obscureText: !isEmail,
             decoration: InputDecoration(
-              hintStyle: const TextStyle(color: Colors.black),
+              hintStyle: const TextStyle(color: Colors.grey),
               hintText: hintText,
               border: InputBorder.none,
             ),
