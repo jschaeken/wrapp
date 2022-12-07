@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:wrapp/Screens/EmailSignIn.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -25,12 +25,8 @@ class LoginScreen extends StatelessWidget {
           LoginPageButton(
             text: login,
             onPressed: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => EnterCode())),
+                context, MaterialPageRoute(builder: (_) => const EnterCode())),
           ),
-          // LoginPageButton(
-          //   text: register,
-          //   onPressed: () {},
-          // ),
           const SizedBox(
             height: 30,
           )
@@ -41,7 +37,7 @@ class LoginScreen extends StatelessWidget {
 }
 
 class EnterCode extends StatefulWidget {
-  EnterCode({
+  const EnterCode({
     Key? key,
   }) : super(key: key);
 
@@ -83,11 +79,9 @@ class _EnterCodeState extends State<EnterCode> {
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
     List<String> code = [];
-    cntrlList.forEach(
-      (element) {
-        code.add(element.text);
-      },
-    );
+    for (var element in cntrlList) {
+      code.add(element.text);
+    }
     final finalCode = code.join();
     return Scaffold(
       appBar: AppBar(
@@ -97,7 +91,7 @@ class _EnterCodeState extends State<EnterCode> {
         leading: IconButton(
           iconSize: 30,
           color: Theme.of(context).colorScheme.background,
-          icon: Icon(Icons.arrow_back_ios_rounded),
+          icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -105,7 +99,7 @@ class _EnterCodeState extends State<EnterCode> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Spacer(
+          const Spacer(
             flex: 1,
           ),
           const Center(
@@ -144,15 +138,16 @@ class _EnterCodeState extends State<EnterCode> {
                   ],
                 )),
           ]),
-          Spacer(),
-          finalCode == '6969'
+          const Spacer(),
+          finalCode == '9999'
               ? LoginPageButton(
                   text: 'Enter',
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/home');
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (_) => const EmailSignIn()));
                   })
-              : SizedBox(),
-          SizedBox(
+              : const SizedBox(),
+          const SizedBox(
             height: 20,
           )
         ],
@@ -189,7 +184,7 @@ class DigitEntryBox extends StatelessWidget {
             textInputAction: TextInputAction.next,
             controller: controller,
             keyboardType: TextInputType.number,
-            style: TextStyle(fontSize: 70),
+            style: const TextStyle(fontSize: 70),
             showCursor: false,
             autofocus: focus,
             decoration: const InputDecoration(

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wrapp/Screens/Betting.dart';
 import 'package:wrapp/Screens/DQList.dart';
@@ -338,8 +339,10 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 20,
             ),
             GestureDetector(
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, '/loginScreen'),
+              onTap: () {
+                FirebaseAuth.instance.signOut();
+                //Navigator.pushReplacementNamed(context, '/loginScreen');
+              },
               child: Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),

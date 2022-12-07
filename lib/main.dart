@@ -39,7 +39,8 @@ class MyApp extends StatelessWidget {
       ),
       home: LoginScreen(),
       routes: {
-        '/home': (context) => MyHomePage(title: 'Welcome to the WR App', true),
+        '/home': (context) =>
+            const MyHomePage(title: 'Welcome to the WR App', true),
         '/profile': (context) => ProfileView('const Test User', 0),
         '/loginScreen': (context) => LoginScreen(),
       },
@@ -50,8 +51,8 @@ class MyApp extends StatelessWidget {
 ColorScheme _customColorScheme = ColorScheme(
   primary: Colors.black,
   secondary: Colors.grey.shade300,
-  surface: Colors.purpleAccent,
-  background: Color.fromARGB(255, 38, 38, 38),
+  surface: Colors.grey.shade900,
+  background: const Color.fromARGB(255, 38, 38, 38),
   error: Colors.black,
   onPrimary: Colors.white,
   onSecondary: Colors.white,
