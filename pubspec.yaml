@@ -45,6 +45,7 @@ dependencies:
   path_provider_android: ^2.0.21
   path_provider_ios: ^2.0.11
   html: ^0.15.1
+  flutter_mobile_vision_2: ^0.1.15
 
 dev_dependencies:
   flutter_test:

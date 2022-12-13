@@ -122,7 +122,7 @@ class _ChatPageState extends State<ChatPage> {
 // Create a completion request
   Future<String> aiRequest(String text) async {
     String endpoint = 'https://api.openai.com/v1/completions';
-    const key = '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';
+    const key = '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';
     HttpClient httpClient = HttpClient();
     HttpClientRequest request = await httpClient.postUrl(Uri.parse(endpoint));
     request.headers.set('Content-Type', 'application/json');
@@ -142,7 +142,10 @@ class _ChatPageState extends State<ChatPage> {
     httpClient.close();
     String responseBody = await response.transform(utf8.decoder).join();
     print(responseBody);
-    final decoded = jsonDecode(responseBody);
+    var decoded = jsonDecode(responseBody);
+    if (decoded['choices'] == null) {
+      return 'An Error has Occured: ${decoded.toString()}';
+    }
 
     return decoded['choices'][0]['text'];
   }
