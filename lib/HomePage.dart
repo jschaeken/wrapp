@@ -7,7 +7,6 @@ import 'package:wrapp/Screens/NewProfileView.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:wrapp/Screens/ai_chat.dart';
-import 'package:wrapp/Screens/police_mode.dart';
 
 import 'Screens/Voting.dart';
 
@@ -65,12 +64,11 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   List<Color> colorSwitches = [
-    Colors.green,
+    Colors.blue,
     Colors.red,
     Colors.black,
     Colors.amber,
     Colors.deepPurple,
-    Colors.blue,
   ];
 
   List<String> topics = [
@@ -79,7 +77,6 @@ class _MyHomePageState extends State<MyHomePage> {
     'DQs',
     'Voting',
     'Ai Chat',
-    'Police Mode',
   ];
 
   List<Widget> pages = [];
@@ -89,8 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const DomCodes(),
     const DQList(),
     const Voting(),
-    ChatPage(),
-    PoliceMode(),
+    ChatPage()
   ];
 
   late DatabaseReference usersDatabase;
@@ -256,9 +252,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   );
                 },
-              ),
-              const Divider(
-                thickness: 3,
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),

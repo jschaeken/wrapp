@@ -32,10 +32,6 @@
 	<string>photos description.</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>App needs access to photos for profile images (nothing else i swear)</string>
-	<key>NSCameraUsageDescription</key>
-	<string>To use OCR</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
