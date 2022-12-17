@@ -225,10 +225,12 @@ class CameraView extends StatelessWidget {
             ? Column(
                 children: const [CircularProgressIndicator()],
               )
-            : FittedBox(
-                fit: BoxFit.cover,
-                child: CameraPreview(controller!),
-              )
+            : SizedBox(
+								height: MediaQuery.of(context).size.width*4/3,
+								width: MediaQuery.of(context).size.width,
+								child: CameraPreview(controller!),
+							)
+           
         : const Center(child: CircularProgressIndicator());
   }
 }
