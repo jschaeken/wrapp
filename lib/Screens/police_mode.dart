@@ -94,13 +94,16 @@ class _PoliceModeState extends State<PoliceMode> {
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
             const SizedBox(
-              height: 100,
+              height: 50,
             ),
             Switch.adaptive(
-                value: showAllBoxes,
-                onChanged: (a) => setState(() {
-                      showAllBoxes = a;
-                    }))
+              value: showAllBoxes,
+              onChanged: (a) => setState(() {
+                showAllBoxes = a;
+              }),
+            ),
+            const Text('Text Boxes',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24))
           ]),
         ),
         body: Stack(alignment: Alignment.center, children: [
@@ -109,7 +112,7 @@ class _PoliceModeState extends State<PoliceMode> {
           for (int i = 0; i < boxes.length; i++)
             showAllBoxes
                 ? Positioned(
-                    top: boxes[i].top - 140,
+                    top: boxes[i].top - 80,
                     left: boxes[i].left,
                     width: boxes[i].width,
                     height: boxes[i].height,
@@ -222,11 +225,8 @@ class CameraView extends StatelessWidget {
             ? Column(
                 children: const [CircularProgressIndicator()],
               )
-            : SizedBox(
-                width: controller!.value.previewSize?.width ??
-                    MediaQuery.of(context).size.width,
-                height: controller!.value.previewSize?.height ??
-                    MediaQuery.of(context).size.height,
+            : FittedBox(
+                fit: BoxFit.cover,
                 child: CameraPreview(controller!),
               )
         : const Center(child: CircularProgressIndicator());
