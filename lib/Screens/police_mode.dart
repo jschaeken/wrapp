@@ -16,6 +16,8 @@ class _PoliceModeState extends State<PoliceMode> {
   late CameraImage _image;
   String toptext = 'NUMBER PLATE EXAMPLE';
   bool isProcessing = false;
+  bool showAllBoxes = false;
+  List<Rect> boxes = [];
   final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
   Rect _textRect = const Rect.fromLTWH(0, 0, 0, 0);
 
@@ -88,23 +90,39 @@ class _PoliceModeState extends State<PoliceMode> {
         appBar: AppBar(
           title: const Text('Police Mode'),
         ),
+        drawer: Drawer(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            const SizedBox(
+              height: 100,
+            ),
+            Switch.adaptive(
+                value: showAllBoxes,
+                onChanged: (a) => setState(() {
+                      showAllBoxes = a;
+                    }))
+          ]),
+        ),
         body: Stack(alignment: Alignment.center, children: [
           CameraView(controller: controller),
           //draw a rectangle around the number plate
+          for (int i = 0; i < boxes.length; i++)
+            showAllBoxes
+                ? Positioned(
+                    top: boxes[i].top,
+                    left: boxes[i].left,
+                    width: boxes[i].width,
+                    height: boxes[i].height,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.green, width: 2),
+                        shape: BoxShape.rectangle,
+                      ),
+                    ),
+                  )
+                : Container(),
           Positioned(
-            top: _textRect.top,
-            left: _textRect.left,
-            width: _textRect.width,
-            height: _textRect.height,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.blue, width: 5),
-                shape: BoxShape.rectangle,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
+            bottom: 20,
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.transparent,
@@ -131,10 +149,17 @@ class _PoliceModeState extends State<PoliceMode> {
               top: 0,
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: Text(
-                  toptext,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 30),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black, width: 5),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    toptext,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 30),
+                  ),
                 ),
               )),
         ]));
@@ -159,13 +184,18 @@ class _PoliceModeState extends State<PoliceMode> {
     for (TextBlock block in recognizedText.blocks) {
       final Rect rect = block.boundingBox;
       _textRect = rect;
+      if (boxes.length > 10) {
+        boxes.removeAt(0);
+      }
+      boxes.add(rect);
       //final List<Offset> cornerPoints = block.cornerPoints;
       final String text = block.text;
       //final List<String> languages = block.recognizedLanguages;
       for (TextLine line in block.lines) {
         // Same getters as TextBlock
-
-        toptext = text;
+        if (text.length > 3) {
+          toptext = text;
+        }
         for (TextElement element in line.elements) {
           // Same getters as TextBlock
         }
@@ -193,8 +223,10 @@ class CameraView extends StatelessWidget {
                 children: const [CircularProgressIndicator()],
               )
             : SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
+                width: controller!.value.previewSize?.width ??
+                    MediaQuery.of(context).size.width,
+                height: controller!.value.previewSize?.height ??
+                    MediaQuery.of(context).size.height,
                 child: CameraPreview(controller!),
               )
         : const Center(child: CircularProgressIndicator());
