@@ -109,7 +109,7 @@ class _PoliceModeState extends State<PoliceMode> {
           for (int i = 0; i < boxes.length; i++)
             showAllBoxes
                 ? Positioned(
-                    top: boxes[i].top,
+                    top: boxes[i].top - 140,
                     left: boxes[i].left,
                     width: boxes[i].width,
                     height: boxes[i].height,
