@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ModernUILogin extends StatefulWidget {
@@ -20,6 +21,9 @@ class _ModernUILoginState extends State<ModernUILogin> {
   String publictext = '';
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.leanBack,
+    );
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(
@@ -58,11 +62,11 @@ class _ModernUILoginState extends State<ModernUILogin> {
                 ? const SizedBox()
                 : TextButton(
                     onPressed: () => letterAnimation(
-                      'Hello Jacques, Welcome to the Matrix',
-                      (text) => setState(() {
+                      fulltext: 'Hello Jacques, Welcome to the Matrix',
+                      textCallback: (text) => setState(() {
                         publictext = text;
                       }),
-                      () => setState(() {
+                      completedCallback: () => setState(() {
                         entryPossible = true;
                       }),
                     ),
@@ -84,9 +88,14 @@ class _ModernUILoginState extends State<ModernUILogin> {
   }
 }
 
-Future<String> letterAnimation(String fulltext,
-    Function(String text) textCallback, Function completedCallback) async {
+Future<String> letterAnimation(
+    {required String fulltext,
+    required Function(String text) textCallback,
+    required Function completedCallback,
+    int? startDelayMilli}) async {
   String text = '';
+  startDelayMilli ?? 0;
+  await Future.delayed(Duration(milliseconds: startDelayMilli!));
   for (int i = 0; i < fulltext.length; i++) {
     text += fulltext[i];
     textCallback(text);
@@ -113,11 +122,15 @@ class _PinLoginState extends State<PinLogin> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    letterAnimation(enterPin, (text) {
-      setState(() {
-        enterPin = text;
-      });
-    }, () {});
+    letterAnimation(
+        fulltext: enterPin,
+        textCallback: (text) {
+          setState(() {
+            enterPin = text;
+          });
+        },
+        completedCallback: () {},
+        startDelayMilli: 500);
   }
 
   @override
@@ -179,7 +192,7 @@ class _PinLoginState extends State<PinLogin> {
     for (int i = 0; i < pindigit.length; i++) {
       pinCheck += pindigit[i].toString();
     }
-    if (pinCheck == '3862') {
+    if (pinCheck == '1111') {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const Matrix()));
     }
@@ -236,15 +249,19 @@ class _MatrixState extends State<Matrix> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    letterAnimation(welcomeText, (text) {
-      setState(() {
-        welcomeText = text;
-      });
-    }, () {
-      setState(() {
-        animationDone = true;
-      });
-    });
+    letterAnimation(
+        fulltext: welcomeText,
+        textCallback: (text) {
+          setState(() {
+            welcomeText = text;
+          });
+        },
+        completedCallback: () {
+          setState(() {
+            animationDone = true;
+          });
+        },
+        startDelayMilli: 500);
   }
 
   @override
@@ -255,6 +272,7 @@ class _MatrixState extends State<Matrix> {
       body: animationDone
           ? Column(
               children: [
+                SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                 Row(
                   children: [
                     for (int i = 0; i < topics.length; i++)
