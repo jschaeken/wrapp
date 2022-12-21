@@ -112,7 +112,7 @@ class _PoliceModeState extends State<PoliceMode> {
           for (int i = 0; i < boxes.length; i++)
             showAllBoxes
                 ? Positioned(
-                    top: boxes[i].top - 80,
+                    top: boxes[i].top - 50,
                     left: boxes[i].left,
                     width: boxes[i].width,
                     height: boxes[i].height,
@@ -226,11 +226,10 @@ class CameraView extends StatelessWidget {
                 children: const [CircularProgressIndicator()],
               )
             : SizedBox(
-								height: MediaQuery.of(context).size.width*4/3,
-								width: MediaQuery.of(context).size.width,
-								child: CameraPreview(controller!),
-							)
-           
+                height: MediaQuery.of(context).size.width * 4 / 3,
+                width: MediaQuery.of(context).size.width,
+                child: CameraPreview(controller!),
+              )
         : const Center(child: CircularProgressIndicator());
   }
 }

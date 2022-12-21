@@ -7,6 +7,7 @@ import 'package:wrapp/Screens/NewProfileView.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:wrapp/Screens/ai_chat.dart';
+import 'package:wrapp/Screens/matrix.dart';
 import 'package:wrapp/Screens/police_mode.dart';
 
 import 'Screens/Voting.dart';
@@ -80,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
     'Voting',
     'Ai Chat',
     'Police Mode',
+    'The Matrix'
   ];
 
   List<Widget> pages = [];
@@ -91,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const Voting(),
     ChatPage(),
     PoliceMode(),
+    const ModernUILogin(),
   ];
 
   late DatabaseReference usersDatabase;
