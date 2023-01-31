@@ -5,9 +5,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wrapp/Screens/LoginScreen.dart';
+import 'package:wrapp/Screens/ai_chat.dart';
+import 'package:wrapp/firebase_options.dart';
 import 'HomePage.dart';
 import 'Screens/ProfileView.dart';
-import 'firebase_options.dart';
 
 bool isMobile = false;
 void main() async {
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: _customColorScheme,
       ),
-      home: LoginScreen(),
+      home: ChatPage(),
       routes: {
         '/home': (context) =>
             const MyHomePage(true, title: 'Welcome to the WR App'),

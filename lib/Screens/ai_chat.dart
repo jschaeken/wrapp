@@ -12,14 +12,52 @@ class _ChatPageState extends State<ChatPage> {
   final List<String> _messages = [];
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  String apiKey = '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';
+  bool isLoaded = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 123, 93, 0),
+      backgroundColor: const Color.fromARGB(255, 36, 36, 36),
       appBar: AppBar(
         title: const Text('Chat with AI'),
         automaticallyImplyLeading: true,
+        flexibleSpace: isLoaded
+            ? null
+            : const LinearProgressIndicator(
+                backgroundColor: Colors.transparent,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => Container(
+                    //textfield for api key
+                    child: Column(
+                      children: [
+                        TextField(
+                          decoration: const InputDecoration(
+                            hintText: 'Enter your API key',
+                          ),
+                          onChanged: (value) {
+                            apiKey = value;
+                          },
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Save'),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.settings))
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -82,7 +120,7 @@ class _ChatPageState extends State<ChatPage> {
           Flexible(
             child: TextField(
               controller: _textController,
-              onSubmitted: _handleSubmitted,
+              onSubmitted: (s) => {},
               decoration:
                   const InputDecoration.collapsed(hintText: "Send a message"),
             ),
@@ -91,7 +129,7 @@ class _ChatPageState extends State<ChatPage> {
             margin: const EdgeInsets.symmetric(horizontal: 4.0),
             child: IconButton(
               icon: const Icon(Icons.send),
-              onPressed: () => _handleSubmitted(_textController.text),
+              onPressed: () => _handleSubmitted(_textController.text, apiKey),
             ),
           ),
         ],
@@ -99,10 +137,15 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  void _handleSubmitted(String text) async {
+  void _handleSubmitted(String text, String apiKey) async {
+    setState(() {
+      isLoaded = false;
+    });
+
     _messages.insert(0, 'You: $text');
     _scrollDown();
-    aiRequest(_textController.text).then((value) => setState(() {
+    aiRequest(_textController.text, apiKey).then((value) => setState(() {
+          isLoaded = true;
           _messages.insert(0, 'AI: ${value.trim()}');
           _scrollDown();
         }));
@@ -120,9 +163,9 @@ class _ChatPageState extends State<ChatPage> {
   }
 
 // Create a completion request
-  Future<String> aiRequest(String text) async {
+  Future<String> aiRequest(String text, String apiKey) async {
     String endpoint = 'https://api.openai.com/v1/completions';
-    const key = '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';
+    var key = apiKey;
     HttpClient httpClient = HttpClient();
     HttpClientRequest request = await httpClient.postUrl(Uri.parse(endpoint));
     request.headers.set('Content-Type', 'application/json');
