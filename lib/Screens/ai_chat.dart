@@ -120,7 +120,7 @@ class _ChatPageState extends State<ChatPage> {
           Flexible(
             child: TextField(
               controller: _textController,
-              onSubmitted: (s) => {},
+              onSubmitted: (s) => _handleSubmitted(_textController.text, apiKey),
               decoration:
                   const InputDecoration.collapsed(hintText: "Send a message"),
             ),
